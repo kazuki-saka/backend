@@ -33,22 +33,22 @@ class UserRegistController extends ApiController
 
             if ($data['result'] == 0){
                 //テーブルに存在しないトークン
-                $response['status'] = 1;
+                $response['status'] = 201;
             }
             else{
                 if ($data['regist_flg'] == 1){
                     //既に本登録済み
-                    $response['status'] = 2;
+                    $response['status'] = 202;
                 }
                 else{
                     $preflight['email'] = $data['email'];
                     $preflight['token'] = $token;
-                    $response['status'] = 0;
+                    $response['status'] = 200;
                 }
             }
         }
         else{
-            $response["status"] = 9;
+            $response["status"] = 209;
         }
         
         $response['preflight'] = $preflight;
@@ -73,12 +73,12 @@ class UserRegistController extends ApiController
             $data = $modelTmp->GetUserMail($token);
             if ($data['result'] == 0){
                 //テーブルに存在しないトークン
-                $response['status'] = 1;
+                $response['status'] = 201;
             }
             else{
                 if ($data['regist_flg'] == 1){
                     //既に本登録済み
-                    $response['status'] = 2;
+                    $response['status'] = 202;
                 }
                 else{
                     //仮登録テーブルの該当レコードを本登録済みに更新
@@ -96,11 +96,11 @@ class UserRegistController extends ApiController
                     if ($ret == 1){
                         //サンクスメール送信
                         $this->SendMail($data['email'], $complete);
-                        $response['status'] = 0;                        
+                        $response['status'] = 200;                        
                     }
                     else{
                         //本登録テーブルの追加に失敗
-                        $response['status'] = 3;
+                        $response['status'] = 203;
                     }
                 }
             }

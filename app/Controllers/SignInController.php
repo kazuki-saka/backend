@@ -37,7 +37,7 @@ class SignInController extends ApiController
             $data = $model->ChkUser($email, $pass);
             if ($data['result'] === 0){
                 //該当データが無い。メールアドレスかパスワードが間違っている
-                $response['status'] = 1;
+                $response['status'] = 201;
                 return $this->respond($response);
             }
             else{
@@ -47,11 +47,11 @@ class SignInController extends ApiController
                 //コメントテーブル検索
                 $commentmodel = new CommentModel();
                 $response['comment'] = $commentmodel->GetData($data['token']);
-                $response['status'] = 0;
+                $response['status'] = 200;
             }
         }
         else{
-            $response['status'] = 9;
+            $response['status'] = 209;
         }
 
         return $this->respond($response);

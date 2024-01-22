@@ -57,10 +57,10 @@ class UserTempController extends ApiController
                     //サンクスメール送信
                     $this->SendMailTemp($adr, $token);
                     break;
-                case 1:
+                case 201:
                     //$response["info"] = 'メールアドレスの形式が不正です';
                     break;
-                case 2:
+                case 202:
                     //$response["info"] = '既に本登録済み';
                     break;
             }
@@ -68,7 +68,7 @@ class UserTempController extends ApiController
             $response["status"] = $flg;                    
         }
         else{
-            $response["status"] = 9;
+            $response["status"] = 209;
         }
 
         return $this->respond($response);
@@ -94,7 +94,7 @@ class UserTempController extends ApiController
 
         //メールアドレス形式確認
         if ($this->IsMail($iAdr) == false){
-            $flg = 1;
+            $flg = 201;
         }
         else{
             //$model = model(UserTmpModel::class);
@@ -109,7 +109,7 @@ class UserTempController extends ApiController
             }
             else{
                 //既に本登録済み
-                $flg = 2;
+                $flg = 202;
             }
         }
 
