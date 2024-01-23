@@ -7,13 +7,22 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 use App\Models\UserModel;
 use App\Models\LikeModel;
 use App\Models\CommentModel;
+use App\Libraries\JwtLibrary;
 
 //サインイン制御クラス
 class SignInController extends ApiController
 {
     // ++++++++++ メンバー ++++++++++
 
+    //認証JWT
+    private $jwtLib;
+
     // ++++++++++ メソッド ++++++++++
+
+    //コンストラクタ
+    public function __construct() {
+		$this->jwtLib = new JwtLibrary();
+	}
 
     //デフォルトメソッド
     public function index()
@@ -41,9 +50,18 @@ class SignInController extends ApiController
                 return $this->respond($response);
             }
             else{
+                //JWT生成
+                $headers = array('alg'=>'HS256','typ'=>'JWT');
+                $payload = array('token'=>$data['token'], 'exp'=>(time() + 300));
+                $response['jwt'] = $this->jwtLib->generate_jwt($headers, $payload);
+
+                //利用者区分
+                $response['kbn'] = $data['kbn'];
+
                 //ほしいねテーブル検索
                 $likemodel = new LikeModel();
                 $response['like'] = $likemodel->GetData($data['token']);
+
                 //コメントテーブル検索
                 $commentmodel = new CommentModel();
                 $response['comment'] = $commentmodel->GetData($data['token']);

@@ -72,13 +72,17 @@ class UserModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) as pass, token as tok FROM m_user
-                HAVING eml = ? AND pass = ?";
+            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml,
+                            AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) as pass,
+                            AES_DECRYPT(`user_kbn`, UNHEX(SHA2(?,512))) as ukbn,
+                            token as tok
+                FROM m_user HAVING eml = ? AND pass = ?";
             return (new Query($db))->setQuery($sql);
         });
 
         // クエリ実行
         $result = $query->execute(
+            $key,
             $key,
             $key,
             $iMail,
@@ -93,6 +97,7 @@ class UserModel extends Model
         else{
             $result1['result'] = 1;
             $result1['token'] = $data->tok;
+            $result1['kbn'] = $data->ukbn;
         }
  
         return $result1;

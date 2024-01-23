@@ -44,7 +44,13 @@ class JwtLibrary {
 
         // 有効期限を確認します。jwt に 'exp' クレームがない場合、エラーが発生することに注意してください。
 		$expiration = json_decode($payload)->exp;
-		$is_token_expired = ($expiration - time()) < 0;
+
+		if ((time() - $expiration) > 36000){
+			$is_token_expired = true;
+		}
+		else{
+			$is_token_expired = false;
+		}
 
 		// secret を使用してヘッダーとペイロードに基づいて署名を構築します
 		$base64_url_header = $this->base64url_encode($header);

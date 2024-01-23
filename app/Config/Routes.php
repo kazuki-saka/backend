@@ -14,4 +14,5 @@ $routes->match(['get', 'post'], 'UserTempController/Add', 'UserTempController::A
 $routes->match(['get', 'post'], 'UserRegistController', 'UserRegistController::ChkToken');
 $routes->match(['get', 'post'], 'UserRegistController/Add', 'UserRegistController::Regist');
 $routes->match(['get', 'post'], 'SignInController', 'SignInController::ChkSignIn');
+$routes->match(['get', 'post'], 'HomeController', 'HomeController::View');
 $routes->get('(:any)', 'Pages::view/$1');
