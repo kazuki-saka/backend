@@ -6,6 +6,12 @@ use App\Models\UserTmpModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use App\Controllers\Controller;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Firebase\JWT\SignatureInvalidException;
+use Firebase\JWT\ExpiredException;
+use App\Helpers\UtilHelper;
+use App\Entities\PreflightEntity;
 
 //仮登録制御クラス
 class UserTempController extends ApiController
@@ -35,16 +41,72 @@ class UserTempController extends ApiController
         return $this->respond($response);
     }
 
-    //仮登録テーブルへの登録
+    //仮登録テーブルへの登録と認証コードを記載したEメールを送信
     public function AddMail()
     {
         //$model = model(UserTmpModel::class);
-        $model = new UserTmpModel();
-        $flg = 0;
         $response = [];
         $adr = ""; 
+        $ret = 0;
+        $token = "";
         //-----------------------------------------------
 
+        $adr = $this->request->getPost('preflight[email]');
+        $token = UtilHelper::GenerateToken(64);
+
+        try{
+            $ret = $this->ChkEmail($adr);
+            switch($ret){
+                case 200:
+                    //仮登録テーブルへの追加
+                    $data = $this->AddEmail($adr);
+
+                    // PreflightEntity生成
+                    $preflight = new PreflightEntity([
+                        "email" => $adr,
+                        "token" => $data["token"],
+                    ]);
+
+                    // 署名生成(1時間有効)
+                    $response["signature"] = $preflight->createSignature(60*60*1);
+                    
+                    // 認証コードメール送信
+                    $preflight->sendAuthcodeNotice($data["authcode"]);
+                    
+                    $response["token"] = $data["token"];
+                    $response["authcode"] = $data["authcode"];
+                    $response["messages"]['message'] = "";
+                    break;
+                case 201:
+                    //$response["info"] = 'メールアドレスの形式が不正です';
+                    break;
+                case 202:
+                    //$response["info"] = '既に本登録済み';
+                    break;
+            }
+            
+            $response["status"] = $ret;
+
+            return $this->respond($response);
+        }
+        catch(DatabaseException $ex){
+            // データベース例外
+            // [500]
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+            ], 500);
+        }
+        catch (\Exception $ex){
+            // [500]
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+            ], 500);
+        }
+
+        
+/*
         if ($this->request->getMethod() === 'post'){
             $adr = $this->request->getPost('preflight[email]');
 
@@ -72,6 +134,7 @@ class UserTempController extends ApiController
         }
 
         return $this->respond($response);
+*/
     }
 
     //メールアドレスと正しいかチェック
@@ -121,16 +184,23 @@ class UserTempController extends ApiController
     {
         //$model = model(UserTmpModel::class);
         $model = new UserTmpModel();
-        $prefix = rand(1000, 9999);
-        $token = uniqid($prefix);
+        //$prefix = rand(1000, 9999);
+        //$token = uniqid($prefix);
         $response = [];
         //-----------------------------------------------
         
-        $response['sql'] = $model->AddUserTmp($token, $iAdr);
-        $response['token'] = $token;
+        //認証トークン生成
+        $token = UtilHelper::GenerateToken(64);
+        // 認証コード生成
+        $authcode = UtilHelper::GetRandomNumber(4);
+
+        // 仮登録テーブルに追加
+        $response["sql"] = $model->AddUserTmp($token, $iAdr, $authcode);
+        $response["token"] = $token;
+        $response["authcode"] = $authcode;
         $response["result"] = 0;
 
-        return $token;
+        return $response;
     }
 
     //トークンからEメール取得

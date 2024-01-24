@@ -72,7 +72,7 @@ class UserTmpModel extends Model
     }
 
     //仮登録テーブルへの追加
-    public function AddUserTmp($iToken, $iMailAdr)
+    public function AddUserTmp($iToken, $iMailAdr, $iAuthCode)
     {
         //$data = ['token' => $iToken, 'email' => $iMailAdr, 'rejist_flg' => '0'];
         //-----------------------------------------------
@@ -85,7 +85,8 @@ class UserTmpModel extends Model
         // クエリ生成        
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "INSERT INTO m_user_tmp ( `token`, `email`, `rejist_flg`) VALUES ( ?, AES_ENCRYPT(?, UNHEX(SHA2(?,512))),?)";
+            $sql = "INSERT INTO m_user_tmp ( `token`, `email`, `authcode`, `rejist_flg`) VALUES
+                                             ( ?, AES_ENCRYPT(?, UNHEX(SHA2(?,512))), ?, ?)";
             return (new Query($db))->setQuery($sql);
         });
     
@@ -94,6 +95,7 @@ class UserTmpModel extends Model
             $iToken,
             $iMailAdr,
             $key,
+            password_hash($iAuthCode, PASSWORD_DEFAULT),
             0
         );
 
