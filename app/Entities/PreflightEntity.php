@@ -7,7 +7,6 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use App\Helpers\UtilHelper;
 use App\Models\TemplatesModel;
-use App\Entities\TemplateEntity;
 
 class PreflightEntity extends Entity
 {
@@ -58,7 +57,7 @@ class PreflightEntity extends Entity
   }
   
   /**
-   * メール送信関数
+   * 認証コード通知メール送信関数
    */
   public function sendAuthcodeNotice(string $authcode): void
   {
@@ -100,12 +99,12 @@ class PreflightEntity extends Entity
       $mailer->Body = UtilHelper::Br2Nl($body);
       
       // 本番環境・ステージング環境のみ送信
-/*
+      /*
       if (getenv("CI_ENVIRONMENT") === "production")
       {
         $mailer->send();
       }
-*/
+      */
       $mailer->send();
     }
     catch (Exception $e)
@@ -127,11 +126,6 @@ class PreflightEntity extends Entity
     {
       require ROOTPATH . "vendor/autoload.php";
       require ROOTPATH . "vendor/phpmailer/phpmailer/language/phpmailer.lang-ja.php";
-      
-      $to = "kroriv.github.io@gmail.com";
-      $to_name = 'Taro Yamada';
-      $subject = 'メールの件名';
-      $body = 'メールの本文';
       
       $mailer->isSMTP();
       $mailer->SMTPAuth = true;

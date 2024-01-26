@@ -18,10 +18,12 @@ $routes->get('/', 'Home::index');
 $routes->get('ApiController', 'ApiController::Test');
 $routes->get('api/event/list', 'ApiController::EventListJson');
 
+// 仮登録取得
+$routes->post("/api/signup/load.preflight", "UserTempController::LoadPreflight");
 // 仮登録作成
 $routes->post('/api/signup/create.preflight', 'UserTempController::AddMail');
 // 仮登録認証
-$routes->post('/api/signup/auth.preflight', 'UserRegistController::ChkToken');
+$routes->post('/api/signup/auth.preflight', 'UserTempController::AuthPreflight');
 
 // 利用者作成
 $routes->post('/api/signup/create.user', 'UserRegistController::Regist');

@@ -5,6 +5,7 @@ use App\Models\UserTmpModel;
 use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Helpers\UtilHelper;
 
 
 //本登録制御クラス
@@ -15,6 +16,7 @@ class UserRegistController extends ApiController
     
     // ++++++++++ メソッド ++++++++++
 
+    
     //トークンが正しいか、仮登録テーブルで確認
     public function ChkToken()
     {
@@ -58,18 +60,73 @@ class UserRegistController extends ApiController
     //利用者本登録
     public function Regist()
     {
+        $model = new UserModel();
         $modelTmp = new UserTmpModel();
         $response = [];
         $data = [];
         $complete = [];
         $token = "";
         $ret = 0;
+        $IsExist = false;
         //-----------------------------------------------
 
+        $postData = (object)$this->request->getPost();
+        $postUser = $postData->user;
+
+        $IsExist = $model->IsUser($postUser['username']);
+        if ($IsExist === true){
+            //既に本登録済み
+            return $this->fail([
+                "status" => 409,
+                "message" => "既に登録されているメールアドレスです。"
+              ], 409);
+        }
+
+        //利用者テーブルに追加
+        $complete['email'] = $postUser['username'];
+        $complete['pass'] = $postUser['passphrase'];
+        $complete['token'] = UtilHelper::GenerateToken(64);
+        $complete['section'] = $postUser['section'];
+        $complete['name'] = $postUser['viewname'];
+        $complete['personal'] = $postUser['personal'];
+
+        try{
+            $model = new UserModel();
+            $ret = $model->AddUser($complete);
+
+            // UserEntity取得
+            $user = $model->findByToken($token);
+
+            // 利用者登録登録完了メール送信
+            $user->sendThanksNotice();
+
+            // [200]
+            return $this->respond([
+                "status" => 200,
+            ]);
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+              ], 500);
+            }
+        catch (\Exception $e){
+            echo("ex=");
+            echo($e);
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+              ], 500);
+        }
+
+
+/*            
         if ($this->request->getMethod() === 'post'){
             
-            $token = $this->request->getPost('complete[token]');
-
+            
             $data = $modelTmp->GetUserMail($token);
             if ($data['result'] == 0){
                 //テーブルに存在しないトークン
@@ -110,6 +167,7 @@ class UserRegistController extends ApiController
         }
 
         return $this->respond($response);
+*/
     }
 
     //認証トークンの取得

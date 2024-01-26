@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use CodeIgniter\Database\Query;
+use App\Entities\PreflightEntity;
 
 //仮登録テーブル制御クラス
 class UserTmpModel extends Model
@@ -16,14 +17,18 @@ class UserTmpModel extends Model
     protected $table = 'm_user_tmp';
 
     //更新対象フィールド
-    protected $allowedFields = ['email','token','rejist_flg'];
+    protected $allowedFields = ['email','token','authcode','rejist_flg'];
+
+    protected $primaryKey = "num";
 
     //暗号化キー
     protected $key;
     protected $skipValidation = false;
     protected $useSoftDeletes = false;
     protected $useTimestamps = true;
-  
+
+    protected $returnType = "App\Entities\PreflightEntity";
+
     // ++++++++++ メソッド ++++++++++
 
     //コンストラクタ
@@ -33,6 +38,27 @@ class UserTmpModel extends Model
         $key = getenv("database.default.encryption.key");
     }
 */
+
+public function findByToken(string $token): PreflightEntity
+{
+    // 暗号鍵取得
+    $key = getenv("database.default.encryption.key");
+    // クエリ生成
+    $query = $this->db->prepare(static function ($db) 
+    {
+        $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `email` FROM m_user_tmp WHERE token IS NOT NULL AND token = ?";
+        return (new Query($db))->setQuery($sql);
+    });
+    // クエリ実行
+    $result = $query->execute(
+        $key,
+        $token
+    );
+    // レコード取得
+    $row = $result->getRow();
+    
+    return $row && $row->num ? new PreflightEntity((array)$row) : new PreflightEntity();
+}
 
     //Eメールアドレスから情報取得
     public function getUserTmp($iMail = null)

@@ -3,9 +3,11 @@
 namespace App\Controllers;
 
 use App\Models\UserTmpModel;
+use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use App\Controllers\Controller;
+use Config\Services;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
@@ -13,9 +15,17 @@ use Firebase\JWT\ExpiredException;
 use App\Helpers\UtilHelper;
 use App\Entities\PreflightEntity;
 
+use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\Database\Exceptions\DatabaseException;
+use App\Entities\UserEntity;
+use App\Entities\TemplateEntity;
+
+
 //仮登録制御クラス
 class UserTempController extends ApiController
 {
+    use ResponseTrait;
+
     // ++++++++++ メンバー ++++++++++
 
     // ++++++++++ メソッド ++++++++++
@@ -137,6 +147,191 @@ class UserTempController extends ApiController
 */
     }
 
+    // 署名、または認証トークンを検証して、該当メールアドレスを返す
+    public function LoadPreflight() 
+    {
+        // フォームデータ取得
+        $postData = (object)$this->request->getPost();
+        // Preflight取得
+        $preflight = $postData->preflight;
+        // 認証識別子取得
+        $token = @$preflight["token"];
+        // 認証署名取得
+        $signature = @$preflight["signature"];
+      
+        //return $signature ? self::_LoadPreflightWithSignature($signature) : self::_LoadPreflightWithToken($token);
+        return self::_LoadPreflightWithSignature($signature);
+    }
+  
+    //署名と認証コードのチェック
+    public function AuthPreflight()
+    {
+      // フォームデータ取得
+      $postData = (object)$this->request->getPost();
+      // Preflight取得
+      $postPreflight = $postData->preflight;
+
+      // 認証署名取得
+      $signature = @$postPreflight["signature"];
+      // 認証コード取得
+      $authcode = @$postPreflight["authcode"];
+
+      // Sleep
+      sleep(3);
+
+      // 署名検証
+      $validated = self::_ValidatePreflightSignature($signature);
+      // 署名検証エラー
+      if (intval(@$validated["status"]) !== 200)
+      {
+        return $this->fail([
+          "status" => @$validated["status"],
+          "message" => @$validated["message"]
+        ], @$validated["status"]);
+      }
+
+      // Preflight取得
+      $preflight = @$validated["preflight"];
+      // 認証コード不一致
+      if (!password_verify($authcode, $preflight->authcode))
+      {
+        // [403]
+        return $this->fail([
+          "status" => 403,
+          "message" => "認証コードが一致しません。",
+        ], 403);
+      }
+
+      // 署名再生成
+      $signature = $preflight->createSignature();
+
+      // [200]
+      return $this->respond([
+        "status" => 200,
+        "signature" => $signature,
+      ]);
+    }
+  
+    // 署名を検証して、該当メールアドレスを返す
+    private function _LoadPreflightWithSignature(string $signature)
+    {
+      // 署名検証
+      $validated = self::_ValidatePreflightSignature($signature);
+      // 署名検証エラー
+      if (intval(@$validated["status"]) !== 200)
+      {
+        return $this->fail([
+          "status" => @$validated["status"],
+          "message" => @$validated["message"]
+        ], @$validated["status"]);
+      }
+      
+      // [200]
+      return $this->respond([
+        "status" => 200,
+        "preflight" => @$validated["preflight"]
+      ]);
+    }
+
+    // 署名からメールアドレス取得
+    private function _ValidatePreflightSignature(string $signature)
+    {
+      // バリデーション生成
+      $validation = Services::validation();
+      $validation->setRules([
+        "signature" => "required",
+      ]);
+      $validation->setRule("signature", "認証署名", "required");
+      $validation->run(["signature" => $signature]);
+      // バリデーションエラー
+      if (!$validation->run(["signature" => $signature]))
+      {
+        return [
+          "status" => 401,
+          "message" => "認証署名の形式が不正です。"
+        ];
+      }
+      
+      try
+      {
+        // 認証署名復元
+        $decoded = JWT::decode($signature, new Key(getenv("jwt.secret.key"), getenv("jwt.signing.algorithm")));
+        // 認証識別子取得
+        $token = $decoded->data->preflight->token;
+        
+        // PreflightsModel生成
+        //$preflightsModel = new PreflightsModel();
+        // Preflight取得
+        //$preflight = $preflightsModel->findByToken($token);
+
+        $model = new UserTmpModel();
+        $preflight = $model->findByToken($token);
+
+        // Preflight該当なし
+        if (!$preflight->num)
+        {
+          // [404]
+          return [
+            "status" => 404,
+            "message" => "該当する署名はありません。",
+          ];
+        }
+        
+        // [200]
+        return [
+          "status" => 200,
+          "message" => "",
+          "preflight" => $preflight
+        ];
+      }
+      // データベース例外
+      catch(DatabaseException $e)
+      {
+        // [500]
+        return [
+          "status" => 500,
+          "message" => "データベースでエラーが発生しました。"
+        ];
+      }
+      // JSON形式例外
+      catch (\JsonException $e)
+      {
+        // [411]
+        return [
+          "status" => 411,
+          "message" => "認証署名のJSON形式が不正です。"
+        ];
+      }
+      // 署名形式例外
+      catch (SignatureInvalidException $e)
+      {
+        // [401]
+        return [
+          "status" => 401,
+          "message" => "認証署名の形式が不正です。"
+        ];
+      }
+      // 有効期限切例外
+      catch (ExpiredException $e)
+      {
+        // [401]
+        return [
+          "status" => 401,
+          "message" => "認証署名の有効期限が過ぎました。"
+        ];
+      }
+      // その他例外
+      catch (\Exception $e)
+      {
+        // [500]
+        return [
+          "status" => 500,
+          "message" => "予期しない例外が発生しました。"
+        ];
+      }
+    }
+  
+
     //メールアドレスと正しいかチェック
     private function IsMail($iAdr)
     {
@@ -163,6 +358,7 @@ class UserTempController extends ApiController
             //$model = model(UserTmpModel::class);
             $model = new UserTmpModel();
             $data['UserTmp'] = $model->getUserTmp($iAdr);
+            $model = new UserModel();
             //-----------------------------------------------
 
             //一意のメールアドレスか確認

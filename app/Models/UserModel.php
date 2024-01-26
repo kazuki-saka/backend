@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use CodeIgniter\Database\Query;
+use App\Entities\UserEntity;
 
 //仮登録テーブル制御クラス
 class UserModel extends Model
@@ -37,9 +38,9 @@ class UserModel extends Model
         {
             $sql = "INSERT INTO m_user ( `email`, `password`, `token`, `user_kbn`, `rejist_name`, `tel`) 
                 VALUES ( AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
-                        AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         ?,
-                        AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
+                        ?,
+                        ?,
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))))";
             return (new Query($db))->setQuery($sql);
@@ -49,14 +50,12 @@ class UserModel extends Model
         $result = $query->execute(
             $iData['email'],
             $key,
-            $iData['pass'],
-            $key,
+            password_hash($iData["pass"], PASSWORD_DEFAULT),
             $iData['token'],
             $iData['section'],
-            $key,
             $iData['name'],
             $key,
-            $iData['tel'],
+            $iData['personal']['phonenumber'],
             $key
         );
         
@@ -102,4 +101,61 @@ class UserModel extends Model
  
         return $result1;
     }
+
+    //利用者テーブルに登録されているか確認
+    public function IsUser($iMail)
+    {
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
+        
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml
+                    FROM m_user HAVING eml = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $key,
+            $iMail
+        );
+        
+        $data = $result->getRow();
+        if ($data == null){
+            //対象のEメールアドレスが存在しない
+            $ret = false;
+        }
+        else{
+            $ret = true;
+        }
+ 
+        return $ret;
+    }
+
+    public function findByToken($token)
+    {
+      // 暗号鍵取得
+      $key = getenv("database.default.encryption.key");
+      // クエリ生成
+      $query = $this->db->prepare(static function ($db) 
+      {
+        $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `username`, AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) AS `personal`
+                 FROM m_user WHERE token IS NOT NULL AND token = ?";
+        return (new Query($db))->setQuery($sql);
+      });
+      // クエリ実行
+      $result = $query->execute(
+        $key,
+        $key,
+        $token
+      );
+
+      // レコード取得
+      $row = $result->getRow();
+      
+      return $row && $row->num ? new UserEntity((array)$row) : new UserEntity();
+    }
+  
 }
