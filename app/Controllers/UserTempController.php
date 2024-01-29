@@ -114,7 +114,6 @@ class UserTempController extends ApiController
                 "message" => "予期しない例外が発生しました。"
             ], 500);
         }
-
         
 /*
         if ($this->request->getMethod() === 'post'){
@@ -399,6 +398,7 @@ class UserTempController extends ApiController
         return $response;
     }
 
+/*
     //トークンからEメール取得
     public function GetMailAdr($iToken)
     {
@@ -440,4 +440,5 @@ class UserTempController extends ApiController
 
         return $email;
     }
-}
+*/
+  }

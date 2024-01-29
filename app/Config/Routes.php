@@ -29,6 +29,8 @@ $routes->post('/api/signup/auth.preflight', 'UserTempController::AuthPreflight')
 $routes->post('/api/signup/create.user', 'UserRegistController::Regist');
 // 利用者認証
 $routes->post('/api/signin/auth.user', 'SignInController::ChkSignIn');
+// 利用者防護
+$routes->post("/api/signin/guard.user", "SignInController::GuardUser");
 
 $routes->match(['get', 'post'], 'HomeController', 'HomeController::View');
 $routes->get('(:any)', 'Pages::view/$1');

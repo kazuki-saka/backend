@@ -12,14 +12,10 @@ class UserEntity extends Entity
 {
   /** @var Array Attributes */
   protected $attributes = [
-    "num" => null,
-    "title" => "*",
     "username" => null,
-    "passphrase" => null,
+    "password" => null,
     "section" => null,
-    "viewname" => null,
     "personal" => null,
-    "active" => null,
     "token" => null,
     "dragSortOrder" => null,
     "createdByUserNum" => 1,
@@ -57,15 +53,13 @@ class UserEntity extends Entity
     [
       "username" => $this->username,
       "section" => $this->section,
-      "viewname" => $this->viewname,
       "personal" => json_decode($this->personal),
-      "active" => $this->active,
       "token" => $this->token,
     ];
   }
   
   /**
-   * 認証コード通知メール送信関数
+   * 登録完了通知メール送信関数
    */
   public function sendThanksNotice(): void
   {
@@ -97,14 +91,18 @@ class UserEntity extends Entity
       $mailer->Encoding = "base64";
       $mailer->setFrom(getenv("smtp.default.from"), "FUKUI BRAND FISH");
       $mailer->addAddress($this->username);
-      $mailer->Subject = $temlate->user_thanks_notice_title; 
-      $mailer->Body = UtilHelper::Br2Nl($temlate->user_thanks_notice_content);
+      //$mailer->Subject = $temlate->user_thanks_notice_title; 
+      //$mailer->Body = UtilHelper::Br2Nl($temlate->user_thanks_notice_content);
+      $mailer->Subject = $temlate->user_complete_notice_title;
+      $mailer->Body = UtilHelper::Br2Nl($temlate->user_complete_notice_content);
       
       // 本番環境・ステージング環境のみ送信
-      if (getenv("CI_ENVIRONMENT") === "production")
+/*      if (getenv("CI_ENVIRONMENT") === "production")
       {
         $mailer->send();
       }
+*/
+      $mailer->send();
     }
     catch (Exception $e)
     {

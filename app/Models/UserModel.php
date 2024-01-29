@@ -63,6 +63,32 @@ class UserModel extends Model
     }
 
     //利用者テーブルに登録されているか確認
+    //（メールアドレスで確認）
+    public function findByUsername($username)
+    {
+      // 暗号鍵取得
+      $key = getenv("database.default.encryption.key");
+      // クエリ生成
+      $query = $this->db->prepare(static function ($db) 
+      {
+        $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `username`, AES_DECRYPT(`rejist_name`, UNHEX(SHA2(?,512))) AS `personal`
+                 FROM m_user  HAVING username = ?";
+        return (new Query($db))->setQuery($sql);
+      });
+      // クエリ実行
+      $result = $query->execute(
+        $key,
+        $key,
+        $username
+      );
+      // レコード取得
+      $row = $result->getRow();
+      
+      return $row && $row->token ? new UserEntity((array)$row) : new UserEntity();
+    }
+  
+/*
+    //利用者テーブルに登録されているか確認
     public function ChkUser($iMail, $iPass)
     {
         // 暗号鍵取得
@@ -73,7 +99,7 @@ class UserModel extends Model
         {
             $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml,
                             AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) as pass,
-                            AES_DECRYPT(`user_kbn`, UNHEX(SHA2(?,512))) as ukbn,
+                            ukbn,
                             token as tok
                 FROM m_user HAVING eml = ? AND pass = ?";
             return (new Query($db))->setQuery($sql);
@@ -81,7 +107,6 @@ class UserModel extends Model
 
         // クエリ実行
         $result = $query->execute(
-            $key,
             $key,
             $key,
             $iMail,
@@ -101,6 +126,7 @@ class UserModel extends Model
  
         return $result1;
     }
+*/
 
     //利用者テーブルに登録されているか確認
     public function IsUser($iMail)
@@ -134,6 +160,8 @@ class UserModel extends Model
         return $ret;
     }
 
+    //利用者テーブルに登録されているか確認
+    //（認証トークンで確認）
     public function findByToken($token)
     {
       // 暗号鍵取得
@@ -155,7 +183,7 @@ class UserModel extends Model
       // レコード取得
       $row = $result->getRow();
       
-      return $row && $row->num ? new UserEntity((array)$row) : new UserEntity();
+      return $row && $row->token ? new UserEntity((array)$row) : new UserEntity();
     }
   
 }

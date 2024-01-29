@@ -39,26 +39,28 @@ class UserTmpModel extends Model
     }
 */
 
-public function findByToken(string $token): PreflightEntity
-{
-    // 暗号鍵取得
-    $key = getenv("database.default.encryption.key");
-    // クエリ生成
-    $query = $this->db->prepare(static function ($db) 
+    //仮登録テーブルに登録されているか確認
+    //（認証トークンで確認）
+    public function findByToken(string $token): PreflightEntity
     {
-        $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `email` FROM m_user_tmp WHERE token IS NOT NULL AND token = ?";
-        return (new Query($db))->setQuery($sql);
-    });
-    // クエリ実行
-    $result = $query->execute(
-        $key,
-        $token
-    );
-    // レコード取得
-    $row = $result->getRow();
-    
-    return $row && $row->num ? new PreflightEntity((array)$row) : new PreflightEntity();
-}
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `email` FROM m_user_tmp WHERE token IS NOT NULL AND token = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+        // クエリ実行
+        $result = $query->execute(
+            $key,
+            $token
+        );
+        // レコード取得
+        $row = $result->getRow();
+        
+        return $row && $row->num ? new PreflightEntity((array)$row) : new PreflightEntity();
+    }
 
     //Eメールアドレスから情報取得
     public function getUserTmp($iMail = null)

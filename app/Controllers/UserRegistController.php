@@ -95,7 +95,7 @@ class UserRegistController extends ApiController
             $ret = $model->AddUser($complete);
 
             // UserEntity取得
-            $user = $model->findByToken($token);
+            $user = $model->findByToken($complete['token']);
 
             // 利用者登録登録完了メール送信
             $user->sendThanksNotice();
@@ -179,6 +179,7 @@ class UserRegistController extends ApiController
         return $token;
     }
 
+/*
     //サンクスメール送信（本登録時）
     private function SendMail($iAdr, $iData)
     {
@@ -203,5 +204,5 @@ class UserRegistController extends ApiController
 
         return $email;
     }
-
+*/
 }
