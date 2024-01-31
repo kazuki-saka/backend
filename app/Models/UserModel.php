@@ -36,11 +36,12 @@ class UserModel extends Model
         // クエリ生成        
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "INSERT INTO m_user ( `email`, `password`, `token`, `user_kbn`, `rejist_name`, `tel`) 
+            $sql = "INSERT INTO m_user ( `email`, `password`, `token`, `user_kbn`, `shopname`, `rejist_name`, `nickname`) 
                 VALUES ( AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         ?,
                         ?,
                         ?,
+                        AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))))";
             return (new Query($db))->setQuery($sql);
@@ -53,9 +54,11 @@ class UserModel extends Model
             password_hash($iData["pass"], PASSWORD_DEFAULT),
             $iData['token'],
             $iData['section'],
-            $iData['name'],
+            $iData['shopname'],
             $key,
-            $iData['personal']['phonenumber'],
+            $iData['personal']['name'],
+            $key,
+            $iData['viewname'],
             $key
         );
         

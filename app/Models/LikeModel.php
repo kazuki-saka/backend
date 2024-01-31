@@ -26,7 +26,7 @@ class LikeModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT * FROM t_like WHERE token = ?";
+            $sql = "SELECT id FROM t_like WHERE token = ?";
             return (new Query($db))->setQuery($sql);
         });
 
@@ -36,13 +36,12 @@ class LikeModel extends Model
         );
         
         $cnt = 0;
-        $data['result'] = 0;
         foreach ($result->getResult() as $row){
-            $data[$cnt]['id'] = $row->id;
-            $data[$cnt]['update_time'] = $row->update_time;
-            $data['result'] = 1;
+            $data['id'][$cnt] = $row->id;
             $cnt = $cnt + 1;
         }
+
+        $data['cnt'] = $cnt;
 
         return $data;
     }

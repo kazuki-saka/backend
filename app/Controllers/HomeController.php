@@ -6,6 +6,7 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use App\Models\CommentModel;
 use App\Models\PrModel;
+use App\Models\TopicsModel;
 use App\Libraries\JwtLibrary;
 
 //サイトトップの制御クラス
@@ -14,14 +15,14 @@ class HomeController extends ApiController
     // ++++++++++ メンバー ++++++++++
 
     //認証JWT
-    private $jwtLib;
+    //private $jwtLib;
 
 
     // ++++++++++ メソッド ++++++++++
 
     //コンストラクタ
     public function __construct() {
-        $this->jwtLib = new JwtLibrary();
+        //$this->jwtLib = new JwtLibrary();
     }
     
     //デフォルトメソッド
@@ -33,6 +34,45 @@ class HomeController extends ApiController
     //トップを開いた時の初期表示
     public function View()
     {
+        if ($this->request->getMethod() === 'get'){
+            $response = [];
+            return $this->respond($response);
+        }
+
+        // フォームデータ取得
+        $signature = (string)$this->request->getPost('user[signature]');
+        //$this->echoEx("getData=", $signature);
+
+        // User取得
+        //$getUser = $getData->user;
+        // 認証署名取得
+        //$signature = @$getUser["signature"];
+        
+        // 署名検証
+        $validated = $this->ValidateUserSignature($signature);
+        
+        // 署名検証エラー
+        if (intval(@$validated["status"]) !== 200)
+        {
+            return $this->fail([
+            "status" => @$validated["status"],
+            "message" => @$validated["message"]
+            ], intval(@$validated["status"]));
+        }
+
+        $response['status'] = @$validated["status"];
+
+        //PR動画テーブルから情報取得
+        $prmodel = new PrModel();
+        $response['pr'] = $prmodel->GetData();
+
+        //トピックス
+        $topicmodel = new TopicsModel();
+        $response['topics'] = $topicmodel->GetData();
+
+        return $this->respond($response);
+
+/*
         if ($this->request->getMethod() === 'post'){
             $jwt = $this->request->getPost('Home[jwt]');
             //$ukbn = $this->request->getPost('Home[ukbn]');
@@ -59,5 +99,6 @@ class HomeController extends ApiController
         }
 
         return $this->respond($response);
+*/
     }
 }

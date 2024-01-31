@@ -5,14 +5,14 @@ namespace App\Controllers;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use Firebase\JWT\SignatureInvalidException;
-use Firebase\JWT\ExpiredException;
+//use Firebase\JWT\JWT;
+//use Firebase\JWT\Key;
+//use Firebase\JWT\SignatureInvalidException;
+//use Firebase\JWT\ExpiredException;
 use App\Models\UserModel;
 use App\Models\LikeModel;
 use App\Models\CommentModel;
-use App\Libraries\JwtLibrary;
+//use App\Libraries\JwtLibrary;
 
 //サインイン制御クラス
 class SignInController extends ApiController
@@ -117,7 +117,7 @@ class SignInController extends ApiController
       $signature = @$postUser["signature"];
       
       // 署名検証
-      $validated = self::_ValidateUserSignature($signature);
+      $validated = $this->ValidateUserSignature($signature);
       // 署名検証エラー
       if (intval(@$validated["status"]) !== 200)
       {
@@ -128,106 +128,20 @@ class SignInController extends ApiController
       }
 
       $user = @$validated["user"];
-      //echo($user->username);
-      // [200]
-      return $this->respond([
-        "status" => 200,
-        "user" => $user->username
-      ]);
-    }
- 
-    //署名の検証
-    private function _ValidateUserSignature(string $signature)
-    {
-      // バリデーション生成
-      $validation = Services::validation();
-      $validation->setRules([
-        "signature" => "required",
-      ]);
-      $validation->setRule("signature", "認証署名", "required");
-      $validation->run(["signature" => $signature]);
-      // バリデーションエラー
-      if (!$validation->run(["signature" => $signature]))
-      {
-        return [
-          "status" => 401,
-          "message" => "認証署名の形式が不正です。"
-        ];
-      }
-      
-      try
-      {
-        // 認証署名復元
-        $decoded = JWT::decode($signature, new Key(getenv("jwt.secret.key"), getenv("jwt.signing.algorithm")));
-        // 認証識別子取得
-        $token = $decoded->data->user->token;
-        // UsersModel生成
-        $model = new UserModel();
-        // User取得
-        $user = $model->findByToken($token);
 
-        // User該当なし
-        if (!$user || !$user->token)
-        {
-          // [404]
-          return [
-            "status" => 404,
-            "message" => "該当する署名はありません。",
-          ];
-        }
-        
-        // [200]
-        return [
-          "status" => 200,
-          "message" => "",
-          "user" => $user,
-        ];
-      }
-      // データベース例外
-      catch(DatabaseException $e)
-      {
-        // [500]
-        return [
-          "status" => 500,
-          "message" => "データベースでエラーが発生しました。"
-        ];
-      }
-      // JSON形式例外
-      catch (\JsonException $e)
-      {
-        // [411]
-        return [
-          "status" => 411,
-          "message" => "JSONの形式が不正です。"
-        ];
-      }
-      // 署名形式例外
-      catch (SignatureInvalidException $e)
-      {
-        // [401]
-        return [
-          "status" => 401,
-          "message" => "認証署名の形式が不正です。"
-        ];
-      }
-      // 有効期限切例外
-      catch (ExpiredException $e)
-      {
-        // [401]
-        return [
-          "status" => 401,
-          "message" => "認証署名の有効期限が過ぎました。"
-        ];
-      }
-      // その他例外
-      catch (\Exception $e)
-      {
-        // [500]
-        return [
-          "status" => 500,
-          "message" => "予期しない例外が発生しました。"
-        ];
-      }
-    }
+      //$this->echoEx("user->token=", $user->token);
+
+      //ほしいねテーブル検索
+      $likemodel = new LikeModel();
+      $response['like'] = $likemodel->GetData($user->token);
+
+      //コメントテーブル検索
+      $commentmodel = new CommentModel();
+      $response['comment'] = $commentmodel->GetData($user->token);
       
+      $response["status"] = @$validated["status"];
+
+      return $this->respond($response);
+    }
+
 }

@@ -16,7 +16,7 @@ class UserRegistController extends ApiController
     
     // ++++++++++ メソッド ++++++++++
 
-    
+ /*   
     //トークンが正しいか、仮登録テーブルで確認
     public function ChkToken()
     {
@@ -56,7 +56,7 @@ class UserRegistController extends ApiController
         $response['preflight'] = $preflight;
         return $this->respond($response);
     }
-
+*/
     //利用者本登録
     public function Regist()
     {
@@ -87,7 +87,8 @@ class UserRegistController extends ApiController
         $complete['pass'] = $postUser['passphrase'];
         $complete['token'] = UtilHelper::GenerateToken(64);
         $complete['section'] = $postUser['section'];
-        $complete['name'] = $postUser['viewname'];
+        $complete['shopname'] = $postUser['shopname'];
+        $complete['viewname'] = $postUser['viewname'];
         $complete['personal'] = $postUser['personal'];
 
         try{
@@ -121,7 +122,7 @@ class UserRegistController extends ApiController
                 "message" => "予期しない例外が発生しました。"
               ], 500);
         }
-
+    }
 
 /*            
         if ($this->request->getMethod() === 'post'){
@@ -167,7 +168,6 @@ class UserRegistController extends ApiController
         }
 
         return $this->respond($response);
-*/
     }
 
     //認証トークンの取得
@@ -179,7 +179,6 @@ class UserRegistController extends ApiController
         return $token;
     }
 
-/*
     //サンクスメール送信（本登録時）
     private function SendMail($iAdr, $iData)
     {

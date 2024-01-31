@@ -242,4 +242,11 @@ class UtilHelper
     $decoded = JWT::decode($signature, new Key(getenv("jwt.secret.key"), getenv("jwt.signing.algorithm")));
     return (array)$decoded;
   }
+
+  public static function echoEx($iStr, $iValue)
+  {
+    echo($iStr);
+    echo($iValue);
+    echo("\n");
+  }
 }

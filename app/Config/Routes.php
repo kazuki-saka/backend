@@ -32,5 +32,9 @@ $routes->post('/api/signin/auth.user', 'SignInController::ChkSignIn');
 // 利用者防護
 $routes->post("/api/signin/guard.user", "SignInController::GuardUser");
 
-$routes->match(['get', 'post'], 'HomeController', 'HomeController::View');
+// TOP表示
+//$routes->get('/api/top/view', 'HomeController::View');
+$routes->post('/api/top/view', 'HomeController::View');
+
+
 $routes->get('(:any)', 'Pages::view/$1');

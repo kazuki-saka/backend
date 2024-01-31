@@ -3,43 +3,36 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use CodeIgniter\Database\Query;
 
-//コメントテーブル
-class CommentModel extends Model
+class ListViewModel extends Model
 {
     // ++++++++++ メンバー ++++++++++
 
     protected $db;
 
     //テーブル名
-    protected $table = 't_comment';
-
+    protected $table = 'v_report';
 
     // ++++++++++ メソッド ++++++++++
 
-    //利用者認証トークンからコメント情報取得
-    public function GetData($iToken)
+    public function GetData($iKind)
     {
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id FROM t_comment WHERE token = ?";
+            $sql = "SELECT * FROM v_report WHERE fishkind = ?";
             return (new Query($db))->setQuery($sql);
         });
 
         // クエリ実行
         $result = $query->execute(
-            $iToken,
+            $iKind,
         );
         
-        $cnt = 0;
+        $data = [];
         foreach ($result->getResult() as $row){
-            $data['id'][$cnt] = $row->id;
-            $cnt = $cnt + 1;
+            array_push($data, $row);
         }
-
-        $data['cnt'] = $cnt;
 
         return $data;
     }
