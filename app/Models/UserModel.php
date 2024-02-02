@@ -14,10 +14,10 @@ class UserModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 'm_user';
+    protected $table = 'cmsb_m_user';
 
     //更新対象フィールド
-    protected $allowedFields = ['email','password','token','user_kbn', 'fish_code', 'rejist_name', 'tel', 'fax', 'address', 'representation'];
+    protected $allowedFields = ['email','password','token','user_kbn', 'fish_code', 'shopname', 'rejist_name','nickname' ];
 
     //暗号化キー
     protected $key;
@@ -36,14 +36,16 @@ class UserModel extends Model
         // クエリ生成        
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "INSERT INTO m_user ( `email`, `password`, `token`, `user_kbn`, `shopname`, `rejist_name`, `nickname`) 
+            $sql = "INSERT INTO cmsb_m_user ( `email`, `password`, `token`, `user_kbn`, `shopname`, `rejist_name`, `nickname`, `title`) 
                 VALUES ( AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         ?,
                         ?,
                         ?,
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
                         AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
-                        AES_ENCRYPT(?, UNHEX(SHA2(?,512))))";
+                        AES_ENCRYPT(?, UNHEX(SHA2(?,512))),
+                        ?)"
+                        ;
             return (new Query($db))->setQuery($sql);
         });
      
@@ -59,7 +61,8 @@ class UserModel extends Model
             $iData['personal']['name'],
             $key,
             $iData['viewname'],
-            $key
+            $key,
+            "*"
         );
         
         return $result;
@@ -75,7 +78,7 @@ class UserModel extends Model
       $query = $this->db->prepare(static function ($db) 
       {
         $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `username`, AES_DECRYPT(`rejist_name`, UNHEX(SHA2(?,512))) AS `personal`
-                 FROM m_user  HAVING username = ?";
+                 FROM cmsb_m_user  HAVING username = ?";
         return (new Query($db))->setQuery($sql);
       });
       // クエリ実行
@@ -141,7 +144,7 @@ class UserModel extends Model
         $query = $this->db->prepare(static function ($db) 
         {
             $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml
-                    FROM m_user HAVING eml = ?";
+                    FROM cmsb_m_user HAVING eml = ?";
             return (new Query($db))->setQuery($sql);
         });
 
@@ -173,7 +176,7 @@ class UserModel extends Model
       $query = $this->db->prepare(static function ($db) 
       {
         $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `username`, AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) AS `personal`
-                 FROM m_user WHERE token IS NOT NULL AND token = ?";
+                 FROM cmsb_m_user WHERE token IS NOT NULL AND token = ?";
         return (new Query($db))->setQuery($sql);
       });
       // クエリ実行

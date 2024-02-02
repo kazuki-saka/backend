@@ -13,7 +13,7 @@ class TopicsModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 't_topics';
+    protected $table = 'cmsb_t_topics';
 
 
     // ++++++++++ メソッド ++++++++++
@@ -24,7 +24,7 @@ class TopicsModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id FROM t_topics ORDER BY updatedDate DESC Limit ?";
+            $sql = "SELECT fishkind,detail,updatedDate FROM cmsb_t_topics ORDER BY updatedDate DESC Limit ?";
             return (new Query($db))->setQuery($sql);
         });
         

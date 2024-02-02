@@ -12,7 +12,7 @@ class PrModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 't_pr';
+    protected $table = 'cmsb_m_pr';
 
 
     // ++++++++++ メソッド ++++++++++

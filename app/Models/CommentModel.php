@@ -13,7 +13,7 @@ class CommentModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 't_comment';
+    protected $table = 'cmsb_t_comments';
 
 
     // ++++++++++ メソッド ++++++++++
@@ -24,7 +24,7 @@ class CommentModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id FROM t_comment WHERE token = ?";
+            $sql = "SELECT id FROM cmsb_t_comments WHERE token = ?";
             return (new Query($db))->setQuery($sql);
         });
 

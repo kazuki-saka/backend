@@ -64,7 +64,7 @@ class HomeController extends ApiController
 
         //PR動画テーブルから情報取得
         $prmodel = new PrModel();
-        $response['pr'] = $prmodel->GetData();
+        $response['prurl'] = $prmodel->GetData();
 
         //トピックス
         $topicmodel = new TopicsModel();

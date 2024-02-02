@@ -5,7 +5,7 @@ use CodeIgniter\Model;
 class TemplatesModel extends Model
 {
   protected $db;
-  protected $table = "m_mailtemplate";
+  protected $table = "cmsb_m_mailtemplates";
   protected $primaryKey = "num";
   protected $returnType = "App\Entities\TemplateEntity";
   protected $allowedFields = [

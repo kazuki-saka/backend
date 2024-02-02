@@ -14,10 +14,10 @@ class UserTmpModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 'm_user_tmp';
+    protected $table = 'cmsb_t_usertmp';
 
     //更新対象フィールド
-    protected $allowedFields = ['email','token','authcode','rejist_flg'];
+    protected $allowedFields = ['email','token','authcode'];
 
     protected $primaryKey = "num";
 
@@ -48,7 +48,7 @@ class UserTmpModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `email` FROM m_user_tmp WHERE token IS NOT NULL AND token = ?";
+            $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `email` FROM cmsb_t_usertmp WHERE token IS NOT NULL AND token = ?";
             return (new Query($db))->setQuery($sql);
         });
         // クエリ実行
@@ -79,7 +79,7 @@ class UserTmpModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, rejist_flg as rflg FROM m_user_tmp HAVING eml IS NOT NULL AND eml = ? AND rflg = 1";
+            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml FROM cmsb_t_usertmp HAVING eml IS NOT NULL AND eml = ?";
             return (new Query($db))->setQuery($sql);
         });
 
@@ -113,7 +113,7 @@ class UserTmpModel extends Model
         // クエリ生成        
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "INSERT INTO m_user_tmp ( `token`, `email`, `authcode`, `rejist_flg`) VALUES
+            $sql = "INSERT INTO cmsb_t_usertmp ( `token`, `email`, `authcode`, `title`) VALUES
                                              ( ?, AES_ENCRYPT(?, UNHEX(SHA2(?,512))), ?, ?)";
             return (new Query($db))->setQuery($sql);
         });
@@ -124,7 +124,7 @@ class UserTmpModel extends Model
             $iMailAdr,
             $key,
             password_hash($iAuthCode, PASSWORD_DEFAULT),
-            0
+            "*"
         );
 
         return $result;
@@ -150,7 +150,7 @@ class UserTmpModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, rejist_flg FROM m_user_tmp WHERE token = ?";
+            $sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, rejist_flg FROM cmsb_t_usertmp WHERE token = ?";
             return (new Query($db))->setQuery($sql);
         });
 
@@ -169,7 +169,7 @@ class UserTmpModel extends Model
 
         return $data;
     }
-
+/*
     //本登録済みフラグをONにする
     public function UpdateRegistFlg($iToken)
     {
@@ -184,7 +184,7 @@ class UserTmpModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "UPDATE m_user_tmp SET rejist_flg = 1 WHERE token = ?";
+            $sql = "UPDATE cmsb_t_usertmp SET rejist_flg = 1 WHERE token = ?";
 
             //$sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, rejist_flg FROM m_user_tmp WHERE token = ?";
             return (new Query($db))->setQuery($sql);
@@ -200,5 +200,6 @@ class UserTmpModel extends Model
 
         return $result;
     }
+*/
 }
 

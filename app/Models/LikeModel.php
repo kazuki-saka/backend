@@ -13,7 +13,7 @@ class LikeModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 't_like';
+    protected $table = 'cmsb_t_likes';
 
     //暗号化キー
     protected $key;
@@ -26,7 +26,7 @@ class LikeModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id FROM t_like WHERE token = ?";
+            $sql = "SELECT id FROM cmsb_t_likes WHERE token = ?";
             return (new Query($db))->setQuery($sql);
         });
 

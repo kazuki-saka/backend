@@ -34,6 +34,7 @@ class UserTempController extends ApiController
     //デフォルトメソッド
     public function index()
     {
+    /*
         $model = model(UserTmpModel::class);
         $data = [
             'UserTmp' => $model->getUserTmp(),
@@ -49,6 +50,7 @@ class UserTempController extends ApiController
 
         // [200]
         return $this->respond($response);
+    */
     }
 
     //仮登録テーブルへの登録と認証コードを記載したEメールを送信
@@ -64,8 +66,11 @@ class UserTempController extends ApiController
         $adr = $this->request->getPost('preflight[email]');
         $token = UtilHelper::GenerateToken(64);
 
+        //$this->echoEx("adr=", $adr);
+
         try{
             $ret = $this->ChkEmail($adr);
+
             switch($ret){
                 case 200:
                     //仮登録テーブルへの追加
@@ -92,6 +97,7 @@ class UserTempController extends ApiController
                     break;
                 case 202:
                     //$response["info"] = '既に本登録済み';
+                    $response["messages"]['message'] = "既に本登録済み";
                     break;
             }
             
@@ -355,13 +361,12 @@ class UserTempController extends ApiController
         }
         else{
             //$model = model(UserTmpModel::class);
-            $model = new UserTmpModel();
-            $data['UserTmp'] = $model->getUserTmp($iAdr);
             $model = new UserModel();
+            $ret = $model->IsUser($iAdr);
             //-----------------------------------------------
 
             //一意のメールアドレスか確認
-            if (empty($data['UserTmp'])) {
+            if ($ret === false) {
                 //登録可能メールアドレス
                 $flg = 200;
             }
