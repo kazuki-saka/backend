@@ -38,4 +38,28 @@ class TopicsModel extends Model
         //$data = $this->findAll(10, 0)->orderBy('updatedDate DESC');
         return $data;
     }
+
+    //該当の魚種を選定してから更新日付が新しいものから10件取得
+    public function GetFishData($iKind, $iLimit = 10)
+    {
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT id,fishkind,detail,updatedDate FROM cmsb_t_topics WHERE fishkind = ? ORDER BY updatedDate DESC Limit ?";
+            return (new Query($db))->setQuery($sql);
+        });
+        
+        $result = $query->execute(
+            $iKind,
+            $iLimit
+        );
+
+        $data = [];
+        foreach ($result->getResult() as $row){
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
+
 }

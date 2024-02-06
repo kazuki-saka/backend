@@ -3,6 +3,8 @@ namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Models\ReportModel;
+use App\Models\TopicsModel;
 
 class ReportListController extends ApiController
 {
@@ -23,6 +25,7 @@ class ReportListController extends ApiController
     {
         // フォームデータ取得
         $signature = (string)$this->request->getPost('user[signature]');
+        $fish = (string)$this->request->getPost('user[kind]');
         //$this->echoEx("getData=", $signature);
 
         // 署名検証
@@ -37,6 +40,32 @@ class ReportListController extends ApiController
             ], intval(@$validated["status"]));
         }
         
+        $response['status'] = @$validated["status"];
+
+        //記事ビューテーブルから該当の魚種記事を取得
+        $kind = 0;
+        switch ($fish){
+            case "salmon":
+                $kind = 1;
+                break;
+            case "fugu":
+                $kind = 2;
+                break;
+            case "seabream":
+                $kind = 3;
+                break;
+            case "mahata":
+                $kind = 4;
+        }
+
+        $Repmodel = new ReportModel();
+        $response['report'] = $Repmodel->GetData($kind);
+
+        //トピックステーブルから該当の魚種トピックスを取得
+        $topmodel = new TopicsModel();
+        $response['topics'] = $topmodel->GetFishData($kind);
+
+        return $this->respond($response);
     }
 
 }

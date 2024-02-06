@@ -36,5 +36,8 @@ $routes->post("/api/signin/guard.user", "SignInController::GuardUser");
 //$routes->get('/api/top/view', 'HomeController::View');
 $routes->post('/api/top/view', 'HomeController::View');
 
+//魚種毎の記事取得
+$routes->post('/api/report/view', 'ReportListController::View');
+
 
 $routes->get('(:any)', 'Pages::view/$1');
