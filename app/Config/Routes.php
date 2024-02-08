@@ -39,5 +39,11 @@ $routes->post('/api/top/view', 'HomeController::View');
 //魚種毎の記事取得
 $routes->post('/api/report/view', 'ReportListController::View');
 
+//記事詳細取得
+$routes->get('/api/detail/view', 'ReportDetailController::View');
+
+//ほしいね更新
+$routes->post('/api/detail/likeup', 'ReportDetailController::likeup');
+
 
 $routes->get('(:any)', 'Pages::view/$1');

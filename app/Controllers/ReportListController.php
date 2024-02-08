@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
-use App\Models\ReportModel;
+use App\Models\ReportViewModel;
 use App\Models\TopicsModel;
 
 class ReportListController extends ApiController
@@ -58,12 +58,12 @@ class ReportListController extends ApiController
                 $kind = 4;
         }
 
-        $Repmodel = new ReportModel();
-        $response['report'] = $Repmodel->GetData($kind);
+        $Repmodel = new ReportViewModel();
+        $response['report'] = $Repmodel->GetKindData($kind);
 
         //トピックステーブルから該当の魚種トピックスを取得
         $topmodel = new TopicsModel();
-        $response['topics'] = $topmodel->GetFishData($kind);
+        $response['topics'] = $topmodel->GetKindData($kind);
 
         return $this->respond($response);
     }

@@ -21,8 +21,8 @@ class ReportModel extends Model
 
     // ++++++++++ メソッド ++++++++++
 
-    //魚種単位で記事を取得（ビューテーブルの方を参照）
-    public function GetData($iKind)
+    //指定した記事IDの情報を取得する
+    public function GetData($iId)
     {
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");
@@ -30,14 +30,17 @@ class ReportModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id, title, detail_m, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, updatedDate FROM v_report WHERE fishkind = ?";
+            $sql = "SELECT t_rep.id, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate 
+                FROM cmsb_t_report as t_rep
+                LEFT JOIN cmsb_m_user AS m_usr ON m_usr.token = t_rep.token
+                WHERE t_rep.id = ?";
             return (new Query($db))->setQuery($sql);
         });
 
         // クエリ実行
         $result = $query->execute(
             $key,
-            $iKind
+            $iId
         );
 
         $data = [];
@@ -46,5 +49,7 @@ class ReportModel extends Model
         }
 
         return $data;
+         
     }
+
 }

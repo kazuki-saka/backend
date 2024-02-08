@@ -18,6 +18,7 @@ class LikeModel extends Model
     //暗号化キー
     protected $key;
 
+
     // ++++++++++ メソッド ++++++++++
 
     //利用者認証トークンからほしいね情報取得
@@ -32,7 +33,7 @@ class LikeModel extends Model
 
         // クエリ実行
         $result = $query->execute(
-            $iToken,
+            $iToken
         );
         
         $cnt = 0;
@@ -44,5 +45,58 @@ class LikeModel extends Model
         $data['cnt'] = $cnt;
 
         return $data;
+    }
+
+    //該当記事IDのデータを更新する
+    public function UpCount($iId, $iToken)
+    {
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
+
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT id FROM cmsb_t_likes WHERE id = ? AND token = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $iId,
+            $iToken
+        );
+
+        $ret = 0;
+        if ($result != null){
+            //既にほしいね済み
+            foreach ($result->getResult() as $row){
+                $ret = 401;
+                return $ret;
+            }
+        }
+
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "INSERT INTO cmsb_t_likes (title, id, token)
+                    VALUES (?, ?, ?)";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            "*",
+            $iId,
+            $iToken
+        );
+
+        if ($result != null){
+            $ret = 200;
+        }
+        else{
+            $ret = 402;
+        }
+
+        return $ret;
     }
 }
