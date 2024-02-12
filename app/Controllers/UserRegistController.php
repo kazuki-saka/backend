@@ -114,8 +114,6 @@ class UserRegistController extends ApiController
               ], 500);
             }
         catch (\Exception $e){
-            echo("ex=");
-            echo($e);
             // その他例外
             return $this->fail([
                 "status" => 500,

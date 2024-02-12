@@ -45,5 +45,12 @@ $routes->get('/api/detail/view', 'ReportDetailController::View');
 //ほしいね更新
 $routes->post('/api/detail/likeup', 'ReportDetailController::likeup');
 
+//コメント追加
+$routes->post('/api/detail/Comment', 'ReportDetailController::RejistComment');
+
+//記事の投稿
+$routes->post('/api/detail/Report', 'ReportDetailController::RejistReport');
+
+
 
 $routes->get('(:any)', 'Pages::view/$1');

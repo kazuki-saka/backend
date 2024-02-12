@@ -77,9 +77,30 @@ class CommentModel extends Model
     }
 
     //該当の記事IDに対するコメントを登録する
-    public function Rejist($iId, $iComment)
+    public function Rejist($iId, $iToken, $iComment)
     {
-        
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "INSERT INTO cmsb_t_comments ( `title`, `id`, `token`, `comment`) 
+                VALUES (?,?,?,?)";
+            return (new Query($db))->setQuery($sql);
+        });
 
+        // クエリ実行
+        $result = $query->execute(
+            "*",
+            $iId,
+            $iToken,
+            $iComment
+        );
+        
+        //$row = $result->getRow();
+        if (isset($result)){
+            return 200;
+        }
+        else{
+            return 401;
+        }
     }
 }

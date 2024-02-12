@@ -62,13 +62,29 @@ class HomeController extends ApiController
 
         $response['status'] = @$validated["status"];
 
-        //PR動画テーブルから情報取得
-        $prmodel = new PrModel();
-        $response['prurl'] = $prmodel->GetData();
+        try{
+            //PR動画テーブルから情報取得
+            $prmodel = new PrModel();
+            $response['prurl'] = $prmodel->GetData();
 
-        //トピックス
-        $topicmodel = new TopicsModel();
-        $response['topics'] = $topicmodel->GetData();
+            //トピックス
+            $topicmodel = new TopicsModel();
+            $response['topics'] = $topicmodel->GetData();
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+              ], 500);
+            }
+        catch (\Exception $e){
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+              ], 500);
+        }        
 
         return $this->respond($response);
 

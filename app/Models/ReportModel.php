@@ -52,4 +52,75 @@ class ReportModel extends Model
          
     }
 
+    //最新記事IDの取得
+    public function GetNewId($iKind)
+    {
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT id FROM cmsb_t_report WHERE fishkind = ? ORDER BY updatedDate DESC LIMIT 1";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $iKind
+        );
+        
+        $id = "";
+        switch ($iKind)
+        {
+            case 1:
+                $id = "A";
+                break;    
+            case 2:
+                $id = "B";
+                break;    
+            case 3:
+                $id = "C";
+                break;    
+            case 4:
+                $id = "D";
+                break;    
+        }
+
+        $num = "00000";
+        foreach ($result->getResult() as $row){
+            $temp = (integer)substr($row->id, 1) + 1;
+            $num = str_pad($temp, 5, 0, STR_PAD_LEFT);
+        }
+
+        $id .= $num;
+
+        return $id;
+    }
+
+    //生産者による記事の投稿
+    public function Rejist($iId, $iKind, $iTitle, $iDetail, $iToken)
+    {
+         // クエリ生成
+         $query = $this->db->prepare(static function ($db) 
+         {
+            $sql = "INSERT INTO cmsb_t_report (title, id, token, fishkind, DeployFlg, detail)
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            return (new Query($db))->setQuery($sql);
+         });
+     
+         // クエリ実行
+        $result = $query->execute(
+            $iTitle,
+            $iId,
+            $iToken,
+            $iKind,
+            0,
+            $iDetail
+        );
+
+        if (isset($result)){
+            return 200;
+        }
+        else{
+            return 401;
+        }
+    }
 }

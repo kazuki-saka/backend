@@ -58,12 +58,28 @@ class ReportListController extends ApiController
                 $kind = 4;
         }
 
-        $Repmodel = new ReportViewModel();
-        $response['report'] = $Repmodel->GetKindData($kind);
-
-        //トピックステーブルから該当の魚種トピックスを取得
-        $topmodel = new TopicsModel();
-        $response['topics'] = $topmodel->GetKindData($kind);
+        try{
+            $Repmodel = new ReportViewModel();
+            $response['report'] = $Repmodel->GetKindData($kind);
+    
+            //トピックステーブルから該当の魚種トピックスを取得
+            $topmodel = new TopicsModel();
+            $response['topics'] = $topmodel->GetKindData($kind);    
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+              ], 500);
+            }
+        catch (\Exception $e){
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+              ], 500);
+        }
 
         return $this->respond($response);
     }

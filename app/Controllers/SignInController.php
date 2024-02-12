@@ -67,81 +67,62 @@ class SignInController extends ApiController
             // [200]
             return $this->respond([
                 "status" => 200,
-                "signature" => $signature,
+                "signature" => $signature
             ]);
         }
-
-
-/*
-            $data = $model->ChkUser($email, $pass);
-            if ($data['result'] === 0){
-                //該当データが無い。メールアドレスかパスワードが間違っている
-                $response['status'] = 201;
-                return $this->respond($response);
-            }
-            else{
-                //JWT生成
-                $headers = array('alg'=>'HS256','typ'=>'JWT');
-                $payload = array('token'=>$data['token'], 'exp'=>(time() + 300));
-                $response['jwt'] = $this->jwtLib->generate_jwt($headers, $payload);
-
-                //利用者区分
-                $response['kbn'] = $data['kbn'];
-
-                //ほしいねテーブル検索
-                $likemodel = new LikeModel();
-                $response['like'] = $likemodel->GetData($data['token']);
-
-                //コメントテーブル検索
-                $commentmodel = new CommentModel();
-                $response['comment'] = $commentmodel->GetData($data['token']);
-                $response['status'] = 200;
-            }
-        }
-        else{
-            $response['status'] = 209;
-        }
-
-        return $this->respond($response);
-*/
     }
 
     //署名チェック
     public function GuardUser()
     {
-      // フォームデータ取得
-      $postData = (object)$this->request->getPost();
-      // User取得
-      $postUser = $postData->user;
-      // 認証署名取得
-      $signature = @$postUser["signature"];
-      
-      // 署名検証
-      $validated = $this->ValidateUserSignature($signature);
-      // 署名検証エラー
-      if (intval(@$validated["status"]) !== 200)
-      {
+        // フォームデータ取得
+        $postData = (object)$this->request->getPost();
+        // User取得
+        $postUser = $postData->user;
+        // 認証署名取得
+        $signature = @$postUser["signature"];
+
+        // 署名検証
+        $validated = $this->ValidateUserSignature($signature);
+        // 署名検証エラー
+        if (intval(@$validated["status"]) !== 200)
+        {
         return $this->fail([
-          "status" => @$validated["status"],
-          "message" => @$validated["message"]
+            "status" => @$validated["status"],
+            "message" => @$validated["message"]
         ], intval(@$validated["status"]));
-      }
+        }
 
-      $user = @$validated["user"];
+        $user = @$validated["user"];
 
-      //$this->echoEx("user->token=", $user->token);
+        //$this->echoEx("user->token=", $user->token);
 
-      //ほしいねテーブル検索
-      $likemodel = new LikeModel();
-      $response['like'] = $likemodel->GetData($user->token);
+        try{
+            //ほしいねテーブル検索
+            $likemodel = new LikeModel();
+            $response['like'] = $likemodel->GetData($user->token);
 
-      //コメントテーブル検索
-      $commentmodel = new CommentModel();
-      $response['comment'] = $commentmodel->GetData($user->token);
-      
-      $response["status"] = @$validated["status"];
+            //コメントテーブル検索
+            $commentmodel = new CommentModel();
+            $response['comment'] = $commentmodel->GetData($user->token);
 
-      return $this->respond($response);
+            $response["status"] = @$validated["status"];
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+                ], 500);
+            }
+        catch (\Exception $e){
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+                ], 500);
+        }
+
+        return $this->respond($response);
     }
-
 }
