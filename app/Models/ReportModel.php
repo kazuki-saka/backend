@@ -30,10 +30,10 @@ class ReportModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT t_rep.id, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate 
+            $sql = "SELECT t_rep.id, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate
                 FROM cmsb_t_report as t_rep
                 LEFT JOIN cmsb_m_user AS m_usr ON m_usr.token = t_rep.token
-                WHERE t_rep.id = ?";
+                WHERE t_rep.id = ? AND t_rep.DeployFlg = 1";
             return (new Query($db))->setQuery($sql);
         });
 
@@ -48,8 +48,7 @@ class ReportModel extends Model
             array_push($data, $row);
         }
 
-        return $data;
-         
+        return $data;         
     }
 
     //最新記事IDの取得
