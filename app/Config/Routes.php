@@ -49,7 +49,7 @@ $routes->post('/api/detail/likeup', 'ReportDetailController::likeup');
 $routes->post('/api/detail/Comment', 'ReportDetailController::RejistComment');
 
 //記事の投稿
-$routes->post('/api/detail/Report', 'ReportDetailController::RejistReport');
+$routes->post('/api/report/add', 'ReportDetailController::RejistReport');
 
 
 

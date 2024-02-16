@@ -175,11 +175,9 @@ class ReportDetailController extends ApiController
     public function RejistReport()
     {
         $signature = (string)$this->request->getPost('user[signature]');
-        $token = (string)$this->request->getPost('user[token]');
         $title = (string)$this->request->getPost('report[title]');
-        $fish = (string)$this->request->getPost('report[kind]');
+        $kind = (string)$this->request->getPost('report[kind]');
         $detail = (string)$this->request->getPost('report[detail]');
-        $flg = (string)$this->request->getPost('report[upflg]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -194,21 +192,10 @@ class ReportDetailController extends ApiController
         }
         
         $response['status'] = @$validated["status"];
+        $user = @$validated["user"];
+        $token = $user->token;
+
         try{
-            $kind = 0;
-            switch ($fish){
-                case "salmon":
-                    $kind = 1;
-                    break;
-                case "fugu":
-                    $kind = 2;
-                    break;
-                case "seabream":
-                    $kind = 3;
-                    break;
-                case "mahata":
-                    $kind = 4;
-            }
     
             //記事の登録
             $reportmodel = new ReportModel();

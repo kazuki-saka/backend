@@ -100,8 +100,8 @@ class ReportModel extends Model
          // クエリ生成
          $query = $this->db->prepare(static function ($db) 
          {
-            $sql = "INSERT INTO cmsb_t_report (title, id, token, fishkind, DeployFlg, detail)
-                    VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO cmsb_t_report (title, id, token, fishkind, reportkbn, DeployFlg, detail)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
             return (new Query($db))->setQuery($sql);
          });
      
@@ -111,6 +111,7 @@ class ReportModel extends Model
             $iId,
             $iToken,
             $iKind,
+            1,
             0,
             $iDetail
         );

@@ -50,10 +50,12 @@ class ReportViewModel extends Model
 */
         $data = [];
         if ($iMarketFlg == true){
-            $result = $this->where(['fishkind' => $iKind, 'report_kbn' => 1])->findAll();
+            //市場関係者の記事
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 2])->findAll();
         }
         else{
-            $result = $this->where(['fishkind' => $iKind, 'report_kbn' => 2])->findAll();
+            //生産者の記事
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->findAll();
         }
 
         //$result = $this->findAll();
