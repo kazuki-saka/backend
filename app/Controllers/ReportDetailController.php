@@ -7,6 +7,7 @@ use App\Models\ReportViewModel;
 use App\Models\CommentModel;
 use App\Models\LikeModel;
 use App\Models\ReportModel;
+use App\Models\TopicsModel;
 
 
 //記事詳細制御クラス
@@ -29,8 +30,9 @@ class ReportDetailController extends ApiController
     public function View()
     {
         // フォームデータ取得
-        $signature = (string)$this->request->getget('signature');
-        $id = (string)$this->request->getget('id');
+        $signature = (string)$this->request->getPost('user[signature]');
+        $id = (string)$this->request->getPost('report[id]');
+        $kind = (string)$this->request->getPost('report[kind]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -45,15 +47,25 @@ class ReportDetailController extends ApiController
         }
         
         $response['status'] = @$validated["status"];
+        $response['report'] = [];
+        $response['comment'] = [];
+        $response['topics'] = [];
 
         try{
-            //記事テーブルから該当の記事を取得
-            $Repmodel = new ReportViewModel();
-            $response['report'] = $Repmodel->GetIdData($id);
+            if ($kind == 1){
+                //トピックステーブルから該当の記事を取得
+                $topicmodel = new TopicsModel();
+                $response['topics'] = $topicmodel->GetIdData($id);
+            }
+            else{
+                //記事テーブルから該当の記事を取得
+                $Repmodel = new ReportModel();
+                $response['report'] = $Repmodel->GetData($id);
 
-            //該当記事のコメント一覧を取得
-            $Commodel = new CommentModel();
-            $response['comment'] = $Commodel->GetIdData($id);
+                //該当記事のコメント一覧を取得
+                $Commodel = new CommentModel();
+                $response['comment'] = $Commodel->GetIdData($id);
+            }
         }
         catch(DatabaseException $e){
             // データベース例外
@@ -125,7 +137,6 @@ class ReportDetailController extends ApiController
     public function RejistComment()
     {
         $signature = (string)$this->request->getPost('user[signature]');
-        $token = (string)$this->request->getPost('user[token]');
         $id = (string)$this->request->getPost('report[id]');
         $comment = (string)$this->request->getPost('report[comment]');
 
@@ -142,16 +153,17 @@ class ReportDetailController extends ApiController
         }
         
         $response['status'] = @$validated["status"];
+        $user = @$validated["user"];
+        $token = $user->token;
 
         try{
-            $this->echoEx("token=", $token);
-            $this->echoEx("id=", $id);
-            $this->echoEx("comment=", $comment);
+            //$this->echoEx("token=", $token);
+            //$this->echoEx("id=", $id);
+            //$this->echoEx("comment=", $comment);
 
             //コメント登録
             $commentmodel = new CommentModel();
             $response['status'] = $commentmodel->Rejist($id, $token, $comment);
-
         }
         catch(DatabaseException $e){
             // データベース例外

@@ -15,6 +15,7 @@ class CommentModel extends Model
     //テーブル名
     protected $table = 'cmsb_t_comments';
 
+    protected $returnType = 'array';
 
     // ++++++++++ メソッド ++++++++++
 
@@ -53,7 +54,7 @@ class CommentModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id, comment, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) as nickname, t_comment.updatedDate FROM cmsb_t_comments AS t_comment
+            $sql = "SELECT t_comment.num, comment, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) as nickname, t_comment.updatedDate FROM cmsb_t_comments AS t_comment
                     LEFT JOIN cmsb_m_user AS m_user ON t_comment.token = m_user.token WHERE t_comment.id = ? ORDER BY t_comment.updatedDate DESC";
             return (new Query($db))->setQuery($sql);
         });
@@ -71,7 +72,7 @@ class CommentModel extends Model
             $cnt = $cnt + 1;
         }
 
-        $data['cnt'] = $cnt;
+        //$data['cnt'] = $cnt;
 
         return $data;
     }

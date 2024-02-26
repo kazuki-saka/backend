@@ -62,4 +62,24 @@ class TopicsModel extends Model
         return $data;
     }
 
+    public function GetIdData($iNum)
+    {
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT num as id, fishkind, title, detail as detail_modify, updatedDate FROM cmsb_t_topics WHERE num = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        $result = $query->execute(
+            $iNum
+        );
+
+        $data = [];
+        foreach ($result->getResult() as $row){
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
 }

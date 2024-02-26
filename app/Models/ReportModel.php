@@ -43,11 +43,12 @@ class ReportModel extends Model
             $iId
         );
 
-        $data = [];
         foreach ($result->getResult() as $row){
-            array_push($data, $row);
+            //array_push($data, $row);
+            $data = $row;
+            break;
         }
-
+        //$data = $result->getResult();
         return $data;         
     }
 

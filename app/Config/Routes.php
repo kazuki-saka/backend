@@ -40,7 +40,8 @@ $routes->post('/api/top/view', 'HomeController::View');
 $routes->post('/api/report/view', 'ReportListController::View');
 
 //記事詳細取得
-$routes->get('/api/detail/view', 'ReportDetailController::View');
+//$routes->get('/api/detail/view', 'ReportDetailController::View');
+$routes->post('/api/detail/view', 'ReportDetailController::View');
 
 //ほしいね更新
 $routes->post('/api/detail/likeup', 'ReportDetailController::likeup');
