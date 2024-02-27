@@ -47,6 +47,30 @@ class LikeModel extends Model
         return $data;
     }
 
+    //記事IDからほしいね情報取得
+    public function GetIdData($iId)
+    {
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT COUNT(id) AS num FROM cmsb_t_likes WHERE id = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $iId
+        );
+        
+        $cnt = 0;
+        foreach ($result->getResult() as $row){
+            $data = $row->num;
+            break;
+        }
+
+        return $data;
+    }
+
     //該当記事IDのデータを更新する
     public function UpCount($iId, $iToken)
     {
@@ -70,7 +94,7 @@ class LikeModel extends Model
         if ($result != null){
             //既にほしいね済み
             foreach ($result->getResult() as $row){
-                $ret = 401;
+                $ret = 200;
                 return $ret;
             }
         }

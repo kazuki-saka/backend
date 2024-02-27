@@ -50,6 +50,7 @@ class ReportDetailController extends ApiController
         $response['report'] = [];
         $response['comment'] = [];
         $response['topics'] = [];
+        $response["likenum"] = 0;
 
         try{
             if ($kind == 1){
@@ -65,6 +66,10 @@ class ReportDetailController extends ApiController
                 //該当記事のコメント一覧を取得
                 $Commodel = new CommentModel();
                 $response['comment'] = $Commodel->GetIdData($id);
+
+                //該当記事のほしいね数を取得
+                $LikeModel = new LikeModel();
+                $response["likenum"] = $LikeModel->GetIdData($id);
             }
         }
         catch(DatabaseException $e){
@@ -91,7 +96,6 @@ class ReportDetailController extends ApiController
         // フォームデータ取得
         $signature = (string)$this->request->getPost('user[signature]');
         $id = (string)$this->request->getPost('report[id]');
-        $token = (string)$this->request->getPost('user[token]');
         //$this->echoEx("getData=", $signature);
 
         // 署名検証
@@ -107,6 +111,8 @@ class ReportDetailController extends ApiController
         }
         
         $response['status'] = @$validated["status"];
+        $user = @$validated["user"];
+        $token = $user->token;
 
         //$this->echoEx("id=", $id);
 

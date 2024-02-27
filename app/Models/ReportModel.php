@@ -43,12 +43,18 @@ class ReportModel extends Model
             $iId
         );
 
+        $data = [];
         foreach ($result->getResult() as $row){
             //array_push($data, $row);
             $data = $row;
             break;
         }
         //$data = $result->getResult();
+        
+        //改行コードを<br>に変換する
+        $data->detail_modify = nl2br($data->detail_modify, false);
+
+
         return $data;         
     }
 
