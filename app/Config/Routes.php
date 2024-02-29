@@ -52,6 +52,11 @@ $routes->post('/api/detail/Comment', 'ReportDetailController::RejistComment');
 //記事の投稿
 $routes->post('/api/report/add', 'ReportDetailController::RejistReport');
 
+//問い合わせ時の初期表示
+$routes->post('/api/inquiry/view', 'InquiryController::View');
+
+//問い合わせ時のメール送信
+$routes->post('/api/inquiry/view', 'InquiryController::Send');
 
 
 $routes->get('(:any)', 'Pages::view/$1');

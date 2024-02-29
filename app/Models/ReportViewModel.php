@@ -72,6 +72,9 @@ class ReportViewModel extends Model
                 $tmp["updatedDate"] = $row["updatedDate"];
                 $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
+                $tmp["like_flg"] = false;
+                $tmp["comment_flg"] = false;
+                
                 array_push($data, $tmp);
             }
 
@@ -122,7 +125,7 @@ class ReportViewModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id, title, detail_m, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, updatedDate FROM cmsb_v_report WHERE id = ?";
+            $sql = "SELECT num AS id, title, detail_m, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, updatedDate FROM cmsb_v_report WHERE num = ?";
             return (new Query($db))->setQuery($sql);
         });
 

@@ -56,7 +56,7 @@ class ReportDetailController extends ApiController
             if ($kind == 1){
                 //トピックステーブルから該当の記事を取得
                 $topicmodel = new TopicsModel();
-                $response['topics'] = $topicmodel->GetIdData($id);
+                $response['report'] = $topicmodel->GetIdData($id);
             }
             else{
                 //記事テーブルから該当の記事を取得
@@ -219,14 +219,14 @@ class ReportDetailController extends ApiController
             $reportmodel = new ReportModel();
 
             //$this->echoEx("kind=", $kind);
-            $id = $reportmodel->GetNewId($kind);
+            //$id = $reportmodel->GetNewId($kind);
 
             //$this->echoEx("token=", $token);
             //$this->echoEx("id=", $id);
             //$this->echoEx("title=", $title);
             //$this->echoEx("comment=", $detail);
 
-            $response['status'] = $reportmodel->Rejist($id, $kind, $title, $detail, $token);
+            $response['status'] = $reportmodel->Rejist($kind, $title, $detail, $token);
         }
         catch(DatabaseException $e){
             // データベース例外

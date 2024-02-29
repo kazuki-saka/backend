@@ -77,7 +77,9 @@ class TopicsModel extends Model
 
         $data = [];
         foreach ($result->getResult() as $row){
-            array_push($data, $row);
+            //array_push($data, $row);
+            $data = $row;
+            break;
         }
 
         return $data;

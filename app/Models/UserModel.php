@@ -166,7 +166,7 @@ class UserModel extends Model
         return $ret;
     }
 
-    //利用者テーブルに登録されているか確認
+    //利用者テーブルから利用者情報取得
     //（認証トークンで確認）
     public function findByToken($token)
     {
@@ -191,5 +191,37 @@ class UserModel extends Model
       
       return $row && $row->token ? new UserEntity((array)$row) : new UserEntity();
     }
-  
+    
+    //利用者テーブルから利用者情報取得
+    //（認証トークンで確認）
+    public function GetUserData($iToken)
+    {
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+        $sql = "SELECT AES_DECRYPT(`shopname`, UNHEX(SHA2(?,512))) AS `shopname`, AES_DECRYPT(`rejist_name`, UNHEX(SHA2(?,512))) AS `rejistname`
+                    FROM cmsb_m_user WHERE token IS NOT NULL AND token = ?";
+        return (new Query($db))->setQuery($sql);
+        });
+        // クエリ実行
+        $result = $query->execute(
+        $key,
+        $key,
+        $iToken
+        );
+
+        // レコード取得
+        $row = $result->getRow();
+
+        $data = [];
+        foreach ($result->getResult() as $row){
+            //array_push($data, $row);
+            $data = $row;
+            break;
+        }
+
+        return $data;
+    }    
 }
