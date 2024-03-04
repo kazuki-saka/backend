@@ -13,6 +13,8 @@ class TemplatesModel extends Model
     "preflight_authcode_notice_content",
     "user_complete_notice_title",
     "user_complete_notice_content",
+    "inquiry_title",
+    "inquiry_detail",
     "title",
   ];
   protected $skipValidation = false;

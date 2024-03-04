@@ -56,7 +56,7 @@ $routes->post('/api/report/add', 'ReportDetailController::RejistReport');
 $routes->post('/api/inquiry/view', 'InquiryController::View');
 
 //問い合わせ時のメール送信
-$routes->post('/api/inquiry/view', 'InquiryController::Send');
+$routes->post('/api/inquiry/send', 'InquiryController::Send');
 
 
 $routes->get('(:any)', 'Pages::view/$1');
