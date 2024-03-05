@@ -45,7 +45,7 @@ class TopicsModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT num,fishkind,detail,updatedDate FROM cmsb_t_topics WHERE fishkind = ? ORDER BY updatedDate DESC Limit ?";
+            $sql = "SELECT num,fishkind,title,detail,updatedDate FROM cmsb_t_topics WHERE fishkind = ? ORDER BY updatedDate DESC Limit ?";
             return (new Query($db))->setQuery($sql);
         });
         

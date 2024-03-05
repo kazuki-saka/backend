@@ -30,7 +30,7 @@ class ReportModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT t_rep.num as id, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate
+            $sql = "SELECT t_rep.num as id, t_rep.fishkind, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate
                 FROM cmsb_t_report as t_rep
                 INNER JOIN cmsb_m_user AS m_usr ON m_usr.token = t_rep.token
                 WHERE t_rep.num = ? AND t_rep.DeployFlg = 1";
