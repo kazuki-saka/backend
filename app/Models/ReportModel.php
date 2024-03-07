@@ -53,6 +53,8 @@ class ReportModel extends Model
         
         //改行コードを<br>に変換する
         //$data->detail_modify = nl2br($data->detail_modify, false);
+        //<BR>を消す
+        $data->detail_modify = preg_replace('/<br[[:space:]]*\/?[[:space:]]*>/i', "", $data->detail_modify);
 
         return $data;         
     }

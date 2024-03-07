@@ -82,6 +82,8 @@ class TopicsModel extends Model
             break;
         }
 
+        //$data->detail_modify = preg_replace('/<p[[:space:]]*\/?[[:space:]]*>/i', "", $data->detail_modify);
+
         return $data;
     }
 }
