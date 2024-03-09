@@ -34,13 +34,12 @@ class CommentModel extends Model
             $iToken,
         );
         
-        $cnt = 0;
+        $data['id'] = [];
         foreach ($result->getResult() as $row){
-            $data['id'][$cnt] = $row->id;
-            $cnt = $cnt + 1;
+            if (!in_array($row->id, $data['id'])){
+                array_push($data['id'], $row->id);
+            }
         }
-
-        $data['cnt'] = $cnt;
 
         return $data;
     }
@@ -65,14 +64,10 @@ class CommentModel extends Model
             $iId
         );
         
-        $cnt = 0;
         $data =[];
         foreach ($result->getResult() as $row){
             array_push($data, $row);
-            $cnt = $cnt + 1;
         }
-
-        //$data['cnt'] = $cnt;
 
         return $data;
     }

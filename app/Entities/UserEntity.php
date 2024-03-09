@@ -13,10 +13,12 @@ class UserEntity extends Entity
   /** @var Array Attributes */
   protected $attributes = [
     "username" => null,
-    "password" => null,
     "section" => null,
-    "personal" => null,
     "token" => null,
+    "user_kbn" => null,
+    "shopnm" => null,
+    "rejistname" => null,
+    "nicknm" => null,
     "dragSortOrder" => null,
     "createdByUserNum" => 1,
     "updatedByUserNum" => 1
@@ -52,16 +54,18 @@ class UserEntity extends Entity
     return
     [
       "username" => $this->username,
-      "section" => $this->section,
-      "personal" => json_decode($this->personal),
+      "section" => $this->user_kbn,
       "token" => $this->token,
+      "rejistname" => $this->rejistname,
+      "nickname" => $this->nicknm,
+      "shopname" => $this->shopnm,
     ];
   }
   
   /**
    * 登録完了通知メール送信関数
    */
-  public function sendThanksNotice(): void
+  public function sendThanksNotice(string $iPass): void
   {
     // TemplatesModel生成
     $templatesModel = new TemplatesModel();
@@ -92,7 +96,13 @@ class UserEntity extends Entity
       $mailer->setFrom(getenv("smtp.default.from"), "FUKUI BRAND FISH");
       $mailer->addAddress($this->username);
       $mailer->Subject = $temlate->user_thanks_notice_title; 
+      ob_start();
       $mailer->Body = UtilHelper::Br2Nl($temlate->user_thanks_notice_content);
+      $mailer->Body = str_replace("%登録名%", $this->rejistname, $mailer->Body);
+      $mailer->Body = str_replace("%メールアドレス%", $this->username, $mailer->Body);
+      $mailer->Body = str_replace("%パスワード%", $iPass, $mailer->Body);
+      ob_clean();
+
       //$mailer->Subject = $temlate->user_complete_notice_title;
       //$mailer->Body = UtilHelper::Br2Nl($temlate->user_complete_notice_content);
       

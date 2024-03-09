@@ -170,26 +170,32 @@ class UserModel extends Model
     //（認証トークンで確認）
     public function findByToken($token)
     {
-      // 暗号鍵取得
-      $key = getenv("database.default.encryption.key");
-      // クエリ生成
-      $query = $this->db->prepare(static function ($db) 
-      {
-        $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS `username`, AES_DECRYPT(`password`, UNHEX(SHA2(?,512))) AS `personal`
-                 FROM cmsb_m_user WHERE token IS NOT NULL AND token = ?";
-        return (new Query($db))->setQuery($sql);
-      });
-      // クエリ実行
-      $result = $query->execute(
-        $key,
-        $key,
-        $token
-      );
+        // 暗号鍵取得s
+        $key = getenv("database.default.encryption.key");
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT *, AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) AS username, 
+                            AES_DECRYPT(`rejist_name`, UNHEX(SHA2(?,512))) AS rejistname,
+                            AES_DECRYPT(`shopname`, UNHEX(SHA2(?,512))) AS shopnm,
+                            AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nicknm
+                    FROM cmsb_m_user WHERE token IS NOT NULL AND token = ?";
+            return (new Query($db))->setQuery($sql);
+        });
 
-      // レコード取得
-      $row = $result->getRow();
-      
-      return $row && $row->token ? new UserEntity((array)$row) : new UserEntity();
+        // クエリ実行
+        $result = $query->execute(
+            $key,
+            $key,
+            $key,
+            $key,
+            $token
+        );
+
+        // レコード取得
+        $row = $result->getRow();
+        
+        return $row && $row->token ? new UserEntity((array)$row) : new UserEntity();
     }
     
     //利用者テーブルから利用者情報取得

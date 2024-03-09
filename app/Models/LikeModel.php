@@ -36,13 +36,10 @@ class LikeModel extends Model
             $iToken
         );
         
-        $cnt = 0;
+        $data['id'] = [];
         foreach ($result->getResult() as $row){
-            $data['id'][$cnt] = $row->id;
-            $cnt = $cnt + 1;
+            array_push($data['id'], $row->id);
         }
-
-        $data['cnt'] = $cnt;
 
         return $data;
     }

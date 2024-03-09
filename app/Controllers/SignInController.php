@@ -81,23 +81,23 @@ class SignInController extends ApiController
         $postUser = $postData->user;
         // 認証署名取得
         $signature = @$postUser["signature"];
-
+        
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
         // 署名検証エラー
         if (intval(@$validated["status"]) !== 200)
         {
-        return $this->fail([
-            "status" => @$validated["status"],
-            "message" => @$validated["message"]
-        ], intval(@$validated["status"]));
+            return $this->fail([
+                "status" => @$validated["status"],
+                "message" => @$validated["message"]
+            ], intval(@$validated["status"]));
         }
 
-        $user = @$validated["user"];
-
-        //$this->echoEx("user->token=", $user->token);
-
         try{
+            //ユーザー情報
+            $user = @$validated["user"];
+            $response['user'] = $user;
+            
             //ほしいねテーブル検索
             $likemodel = new LikeModel();
             $response['like'] = $likemodel->GetData($user->token);
@@ -114,7 +114,7 @@ class SignInController extends ApiController
                 "status" => 500,
                 "message" => "データベースでエラーが発生しました。"
                 ], 500);
-            }
+        }
         catch (\Exception $e){
             // その他例外
             return $this->fail([

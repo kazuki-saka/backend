@@ -99,7 +99,7 @@ class UserRegistController extends ApiController
             $user = $model->findByToken($complete['token']);
 
             // 利用者登録登録完了メール送信
-            $user->sendThanksNotice();
+            $user->sendThanksNotice($postUser['passphrase']);
 
             // [200]
             return $this->respond([

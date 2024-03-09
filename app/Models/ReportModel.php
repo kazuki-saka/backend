@@ -62,27 +62,38 @@ class ReportModel extends Model
     //生産者による記事の投稿
     public function Rejist($iKind, $iTitle, $iDetail, $iToken)
     {
-         // クエリ生成
-         $query = $this->db->prepare(static function ($db) 
-         {
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
             $sql = "INSERT INTO cmsb_t_report (title, token, fishkind, reportkbn, DeployFlg, detail)
                     VALUES (?, ?, ?, ?, ?, ?)";
             return (new Query($db))->setQuery($sql);
-         });
+        });
      
          // クエリ実行
         $result = $query->execute(
             $iTitle,
             $iToken,
             $iKind,
-            1,
-            0,
+            1,          //生産者による投稿
+            0,          //投稿時は非公開
             $iDetail
         );
+                  
+        if (isset($result)){
+            //登録したIDを取得する
+            // クエリ生成
+            $query = $this->db->prepare(static function ($db) 
+            {
+                $sql = "SELECT num FROM cmsb_t_report WHERE token = ? ORDER BY updatedDate DESC";
+                return (new Query($db))->setQuery($sql);
+            });            
 
-                  //生産者による投稿
-                  //投稿時は非公開
-    if (isset($result)){
+            $result = $query->execute(
+                $iToken
+            );
+
+            $data = $result->getResult();
             return 200;
         }
         else{

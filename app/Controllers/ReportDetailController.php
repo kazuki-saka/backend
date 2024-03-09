@@ -217,16 +217,10 @@ class ReportDetailController extends ApiController
     
             //記事の登録
             $reportmodel = new ReportModel();
-
-            //$this->echoEx("kind=", $kind);
-            //$id = $reportmodel->GetNewId($kind);
-
-            //$this->echoEx("token=", $token);
-            //$this->echoEx("id=", $id);
-            //$this->echoEx("title=", $title);
-            //$this->echoEx("comment=", $detail);
-
             $response['status'] = $reportmodel->Rejist($kind, $title, $detail, $token);
+
+            //画像の登録
+            
         }
         catch(DatabaseException $e){
             // データベース例外

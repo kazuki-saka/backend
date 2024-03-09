@@ -36,8 +36,16 @@ $routes->post("/api/signin/guard.user", "SignInController::GuardUser");
 //$routes->get('/api/top/view', 'HomeController::View');
 $routes->post('/api/top/view', 'HomeController::View');
 
-//魚種毎の記事取得
-$routes->post('/api/report/view', 'ReportListController::View');
+//$routes->post('/api/report/view', 'ReportListController::View');
+//魚種毎の記事取得（市場関係者）
+$routes->post('/api/report/market.viewlist', 'ReportListController::GetMarketReport');
+
+//魚種毎の記事取得（生産者）
+$routes->post('/api/report/fishman.viewlist', 'ReportListController::GetFishmanReport');
+
+//トピックスの取得
+$routes->post('/api/report/topics', 'ReportListController::GetTopics');
+
 
 //記事詳細取得
 //$routes->get('/api/detail/view', 'ReportDetailController::View');

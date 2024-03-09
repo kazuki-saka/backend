@@ -40,19 +40,33 @@ class TopicsModel extends Model
     }
 
     //該当の魚種を選定してから更新日付が新しいものから10件取得
-    public function GetKindData($iKind, $iLimit = 10)
+    public function GetKindData($iKind = null, $iLimit = 10)
     {
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "SELECT num,fishkind,title,detail,updatedDate FROM cmsb_t_topics WHERE fishkind = ? ORDER BY updatedDate DESC Limit ?";
-            return (new Query($db))->setQuery($sql);
-        });
-        
-        $result = $query->execute(
-            $iKind,
-            $iLimit
-        );
+        if ($iKind != null){
+            // クエリ生成
+            $query = $this->db->prepare(static function ($db) 
+            {
+                $sql = "SELECT num,fishkind,title,detail,updatedDate FROM cmsb_t_topics WHERE fishkind = ? ORDER BY updatedDate DESC Limit ?";
+                return (new Query($db))->setQuery($sql);
+            });
+            
+            $result = $query->execute(
+                $iKind,
+                $iLimit
+            );
+        }
+        else{
+            // クエリ生成
+            $query = $this->db->prepare(static function ($db) 
+            {
+                $sql = "SELECT num,fishkind,title,detail,updatedDate FROM cmsb_t_topics ORDER BY updatedDate DESC Limit ?";
+                return (new Query($db))->setQuery($sql);
+            });
+            
+            $result = $query->execute(
+                $iLimit
+            );
+        }
 
         $data = [];
         foreach ($result->getResult() as $row){
