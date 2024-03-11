@@ -8,6 +8,7 @@ use App\Models\CommentModel;
 use App\Models\LikeModel;
 use App\Models\ReportModel;
 use App\Models\TopicsModel;
+use App\Models\UploadModel;
 
 
 //記事詳細制御クラス
@@ -220,6 +221,7 @@ class ReportDetailController extends ApiController
             $response['status'] = $reportmodel->Rejist($kind, $title, $detail, $token);
 
             //画像の登録
+            $uploadmodel = new UploadModel();
             
         }
         catch(DatabaseException $e){

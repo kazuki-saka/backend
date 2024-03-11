@@ -74,6 +74,12 @@ class ReportViewModel extends Model
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
                 $tmp["like_flg"] = false;
                 $tmp["comment_flg"] = false;
+                if ($row["filePath"] == null){
+                    $tmp["imgPath"] = null;
+                }
+                else{
+                    $tmp["imgPath"] = "report/after/" . $row["filePath"];
+                }
                 
                 array_push($data, $tmp);
             }

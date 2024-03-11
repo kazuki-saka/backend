@@ -21,5 +21,9 @@ class UploadModel extends Model
 
     // ++++++++++ メソッド ++++++++++
 
-    
+    //アップロードデータへの登録
+    public function AddData(string $iId, string $iImgPath)
+    {
+
+    }
 }
