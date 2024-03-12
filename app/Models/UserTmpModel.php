@@ -65,14 +65,6 @@ class UserTmpModel extends Model
     //Eメールアドレスから情報取得
     public function getUserTmp($iMail = null)
     {
-/*
-        if ($iMail == null){
-            return $this->findAll();
-        }
-
-        return $this->where(['email' => $iMail])->first();
-*/
-
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");
 
@@ -169,37 +161,5 @@ class UserTmpModel extends Model
 
         return $data;
     }
-/*
-    //本登録済みフラグをONにする
-    public function UpdateRegistFlg($iToken)
-    {
-        $where = [];
-        $data = [];
-        //-----------------------------------------------
-
-        $where = [ 'token' => $iToken];
-        $data = ['regist_flg' => 1];
-        //$this->db->update($where, $data);
-
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "UPDATE cmsb_t_usertmp SET rejist_flg = 1 WHERE token = ?";
-
-            //$sql = "SELECT AES_DECRYPT(`email`, UNHEX(SHA2(?,512))) as eml, rejist_flg FROM m_user_tmp WHERE token = ?";
-            return (new Query($db))->setQuery($sql);
-        });
-
-        // クエリ実行
-        $result = $query->execute(
-            $iToken
-        );
-        
-        //$this->db->where('token', $iToken);
-        //$this->db->update('m_user_tmp', 2); 
-
-        return $result;
-    }
-*/
 }
 

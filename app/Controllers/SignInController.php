@@ -47,28 +47,43 @@ class SignInController extends ApiController
             $email = $this->request->getPost('user[username]');
             $pass = $this->request->getPost('user[passphrase]');
 
-            //利用者テーブルの検索
-            $user = $model->findByUsername($email);
+            try{
+                //利用者テーブルの検索
+                $user = $model->findByUsername($email);
 
-            if (!$user->token || !password_verify($pass, $user->password))
-            {
-                // 該当なし/パスワード不一致
-                // [403]
-                return $this->fail([
-                "status" => 403,
-                "message" => "サインインに失敗しました。メールアドレスかパスワードに誤りがあります。"
-                ], 403);
+                if (!$user->token || !password_verify($pass, $user->password)){
+                    // 該当なし/パスワード不一致
+                    // [403]
+                    return $this->fail([
+                    "status" => 407,
+                    "message" => "サインインに失敗しました。メールアドレスかパスワードに誤りがあります。"
+                    ], 407);
+                }
+                
+                // 署名生成
+                $signature = $user->createSignature();
+                
+                //正常
+                // [200]
+                return $this->respond([
+                    "status" => 200,
+                    "signature" => $signature
+                ]);
             }
-      
-            // 署名生成
-            $signature = $user->createSignature();
-            
-            //正常
-            // [200]
-            return $this->respond([
-                "status" => 200,
-                "signature" => $signature
-            ]);
+            catch(DatabaseException $e){
+                // データベース例外
+                return $this->fail([
+                    "status" => 500,
+                    "message" => "データベースでエラーが発生しました。"
+                    ], 500);
+            }
+            catch (\Exception $e){
+                // その他例外
+                return $this->fail([
+                    "status" => 500,
+                    "message" => "予期しない例外が発生しました。"
+                    ], 500);
+            }      
         }
     }
 

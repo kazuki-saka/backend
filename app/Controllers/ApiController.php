@@ -50,9 +50,6 @@ class ApiController extends ResourceController
   {
     // バリデーション生成
     $validation = Services::validation();
-    $validation->setRules([
-      "signature" => "required",
-    ]);
     $validation->setRule("signature", "認証署名", "required");
     $validation->run(["signature" => $signature]);
     // バリデーションエラー
@@ -122,9 +119,9 @@ class ApiController extends ResourceController
     // 有効期限切例外
     catch (ExpiredException $e)
     {
-      // [401]
+      // [403]
       return [
-        "status" => 401,
+        "status" => 403,
         "message" => "認証署名の有効期限が過ぎました。"
       ];
     }

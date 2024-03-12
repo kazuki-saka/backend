@@ -78,7 +78,7 @@ class ReportViewModel extends Model
                     $tmp["imgPath"] = null;
                 }
                 else{
-                    $tmp["imgPath"] = "report/after/" . $row["filePath"];
+                    $tmp["imgPath"] = "uploads/report/after/" . $row["filePath"];
                 }
                 
                 array_push($data, $tmp);
@@ -144,6 +144,5 @@ class ReportViewModel extends Model
         $data = $result->getResult();
 
         return $data;
-
     }
 }

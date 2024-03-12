@@ -118,37 +118,7 @@ class UserTempController extends ApiController
                 "status" => 500,
                 "message" => "予期しない例外が発生しました。"
             ], 500);
-        }
-        
-/*
-        if ($this->request->getMethod() === 'post'){
-            $adr = $this->request->getPost('preflight[email]');
-
-            $flg = $this->ChkEmail($adr);
-            switch($flg){
-                case 200:
-                    //仮登録テーブルへの追加
-                    $token = $this->AddEmail($adr);
-
-                    //サンクスメール送信
-                    $this->SendMailTemp($adr, $token);
-                    break;
-                case 201:
-                    //$response["info"] = 'メールアドレスの形式が不正です';
-                    break;
-                case 202:
-                    //$response["info"] = '既に本登録済み';
-                    break;
-            }
-
-            $response["status"] = $flg;                    
-        }
-        else{
-            $response["status"] = 209;
-        }
-
-        return $this->respond($response);
-*/
+        }        
     }
 
     // 署名、または認証トークンを検証して、該当メールアドレスを返す
@@ -206,8 +176,8 @@ class UserTempController extends ApiController
         ], 403);
       }
 
-      // 署名再生成
-      $signature = $preflight->createSignature();
+      // 署名再生成(1時間有効)
+      $signature = $preflight->createSignature(60*60*1);
 
       // [200]
       return $this->respond([
@@ -242,9 +212,11 @@ class UserTempController extends ApiController
     {
       // バリデーション生成
       $validation = Services::validation();
+/*
       $validation->setRules([
         "signature" => "required",
       ]);
+*/
       $validation->setRule("signature", "認証署名", "required");
       $validation->run(["signature" => $signature]);
       // バリデーションエラー
@@ -264,10 +236,6 @@ class UserTempController extends ApiController
         $token = $decoded->data->preflight->token;
         
         // PreflightsModel生成
-        //$preflightsModel = new PreflightsModel();
-        // Preflight取得
-        //$preflight = $preflightsModel->findByToken($token);
-
         $model = new UserTmpModel();
         $preflight = $model->findByToken($token);
 
@@ -318,9 +286,9 @@ class UserTempController extends ApiController
       // 有効期限切例外
       catch (ExpiredException $e)
       {
-        // [401]
+        // [403]
         return [
-          "status" => 401,
+          "status" => 403,
           "message" => "認証署名の有効期限が過ぎました。"
         ];
       }
@@ -334,7 +302,6 @@ class UserTempController extends ApiController
         ];
       }
     }
-  
 
     //メールアドレスと正しいかチェック
     private function IsMail($iAdr)
@@ -381,10 +348,7 @@ class UserTempController extends ApiController
     //仮登録テーブルへの追加
     private function AddEmail($iAdr = null)
     {
-        //$model = model(UserTmpModel::class);
         $model = new UserTmpModel();
-        //$prefix = rand(1000, 9999);
-        //$token = uniqid($prefix);
         $response = [];
         //-----------------------------------------------
         
@@ -401,48 +365,4 @@ class UserTempController extends ApiController
 
         return $response;
     }
-
-/*
-    //トークンからEメール取得
-    public function GetMailAdr($iToken)
-    {
-        $model = model(UserTmpModel::class);
-        $response = [];
-        $data['UserTmp'] = $model->GetUserMail($iToken);
-        //-----------------------------------------------
-
-        $response['email'] = $data['UserTmp']['email'];
-
-        return $this->respond($response);
-    }
-
-    //サンクスメール送信（仮登録時）
-    private function SendMailTemp($iAdr, $iToken)
-    {
-        $email = \Config\Services::email();
-        //-----------------------------------------------
-
-        $email->setFrom('sakak499@gmail.com');
-        $email->setTo($iAdr);
-        $email->setSubject("仮登録ありがとう御座います");
-
-        $data = [
-            'token' => $iToken
-        ];
-
-        $template = view("EmailTemplateTemp", $data);
-        $email->setMessage($template);
-
-        //サンクスメール送信
-        if ($email->send()) {
-            //echo '仮登録しました。';
-        }
-        else{
-            $data = $email->printDebugger(['headers']);
-            print_r($data);
-        }
-
-        return $email;
-    }
-*/
   }
