@@ -33,7 +33,6 @@ class ReportDetailController extends ApiController
         // フォームデータ取得
         $signature = (string)$this->request->getPost('user[signature]');
         $id = (string)$this->request->getPost('report[id]');
-        $kind = (string)$this->request->getPost('report[kind]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -54,24 +53,17 @@ class ReportDetailController extends ApiController
         $response["likenum"] = 0;
 
         try{
-            if ($kind == 1){
-                //トピックステーブルから該当の記事を取得
-                $topicmodel = new TopicsModel();
-                $response['report'] = $topicmodel->GetIdData($id);
-            }
-            else{
-                //記事テーブルから該当の記事を取得
-                $Repmodel = new ReportModel();
-                $response['report'] = $Repmodel->GetData($id);
+            //記事テーブルから該当の記事を取得
+            $Repmodel = new ReportModel();
+            $response['report'] = $Repmodel->GetData($id);
 
-                //該当記事のコメント一覧を取得
-                $Commodel = new CommentModel();
-                $response['comment'] = $Commodel->GetIdData($id);
+            //該当記事のコメント一覧を取得
+            $Commodel = new CommentModel();
+            $response['comment'] = $Commodel->GetIdData($id);
 
-                //該当記事のほしいね数を取得
-                $LikeModel = new LikeModel();
-                $response["likenum"] = $LikeModel->GetIdData($id);
-            }
+            //該当記事のほしいね数を取得
+            $LikeModel = new LikeModel();
+            $response["likenum"] = $LikeModel->GetIdData($id);
         }
         catch(DatabaseException $e){
             // データベース例外
@@ -111,13 +103,13 @@ class ReportDetailController extends ApiController
             ], intval(@$validated["status"]));
         }
         
-        $response['status'] = @$validated["status"];
-        $user = @$validated["user"];
-        $token = $user->token;
-
-        //$this->echoEx("id=", $id);
-
         try{
+            //書名からトークンの取得
+            $user = @$validated["user"];
+            $token = $user->token;
+    
+            //$this->echoEx("id=", $id);
+            //$this->echoEx("token=", $token);
             //ほしいね更新
             $likempdel = new LikeModel();
             $response['status'] = $likempdel->UpCount($id, $token);
@@ -159,11 +151,10 @@ class ReportDetailController extends ApiController
             ], intval(@$validated["status"]));
         }
         
-        $response['status'] = @$validated["status"];
-        $user = @$validated["user"];
-        $token = $user->token;
-
         try{
+            //書名からトークンの取得
+            $user = @$validated["user"];
+            $token = $user->token;
             //$this->echoEx("token=", $token);
             //$this->echoEx("id=", $id);
             //$this->echoEx("comment=", $comment);
@@ -178,7 +169,7 @@ class ReportDetailController extends ApiController
                 "status" => 500,
                 "message" => "データベースでエラーが発生しました。"
               ], 500);
-            }
+        }
         catch (\Exception $e){
             // その他例外
             return $this->fail([
@@ -197,6 +188,7 @@ class ReportDetailController extends ApiController
         $title = (string)$this->request->getPost('report[title]');
         $kind = (string)$this->request->getPost('report[kind]');
         $detail = (string)$this->request->getPost('report[detail]');
+        $imgpath = (string)$this->request->getPost('report[imgpath]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -210,19 +202,23 @@ class ReportDetailController extends ApiController
             ], intval(@$validated["status"]));
         }
         
-        $response['status'] = @$validated["status"];
-        $user = @$validated["user"];
-        $token = $user->token;
-
         try{
-    
+            //書名からトークンの取得
+            $user = @$validated["user"];
+            $token = $user->token;
+        
             //記事の登録
             $reportmodel = new ReportModel();
-            $response['status'] = $reportmodel->Rejist($kind, $title, $detail, $token);
+            $id = $reportmodel->Rejist($kind, $title, $detail, $token);
 
             //画像の登録
-            $uploadmodel = new UploadModel();
-            
+            if ($imgpath){
+                $uploadmodel = new UploadModel();
+                $response['status'] = $uploadmodel->AddData($id, $imgpath);    
+            }
+            else{
+                $response['status'] = 200;
+            }
         }
         catch(DatabaseException $e){
             // データベース例外

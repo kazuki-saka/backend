@@ -115,7 +115,7 @@ class LikeModel extends Model
             $ret = 200;
         }
         else{
-            $ret = 402;
+            $ret = 412;
         }
 
         return $ret;

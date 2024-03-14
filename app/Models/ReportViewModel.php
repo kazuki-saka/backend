@@ -62,7 +62,7 @@ class ReportViewModel extends Model
         
         foreach ($result as $row){
             //ユーザー情報読込
-            $user = $this->GetUserData($row["token"]);
+            $user = $this->GetNickName($row["token"]);
 
             if ($user){
                 $tmp["id"] = $row["id"];
@@ -83,21 +83,119 @@ class ReportViewModel extends Model
                 
                 array_push($data, $tmp);
             }
-
-/*
-            $tmp["id"] = $row["id"];
-            $tmp["title"] = $row["title"];
-            $tmp["detail_m"] = $row["detail_m"];
-            $tmp["updatedDate"] = $row["updatedDate"];
-            array_push($data, $tmp);
-*/
         }
 
         return $data;
     }
 
+    //記事の最新20件分をトピックスとして取得
+    public function GetTopics($iKind = null, $iLimit = 20)
+    {
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
 
-    private function GetUserData($iToken)
+        $data = [];
+
+        if ($iKind != null){
+            // クエリ生成
+            $query = $this->db->prepare(static function ($db) 
+            {
+                $sql = "SELECT * FROM cmsb_v_report
+                            WHERE fishkind = ? ORDER BY updatedDate DESC LIMIT ?";
+                return (new Query($db))->setQuery($sql);
+            });
+            
+            $result = $query->execute(
+                $iKind,
+                $iLimit
+            );
+        }
+        else{
+            // クエリ生成
+            //$result = $this->where(['DeployFlg' => 1])->findAll()->orderBy("updatedDate","DESC")->limit(10);
+            $result = $this->where(['DeployFlg' => 1])->findAll();
+
+/*            
+            $query = $this->db->prepare(static function ($db) 
+            {
+                $sql = "SELECT * FROM cmsb_v_report
+                            ORDER BY updatedDate DESC LIMIT ?";
+                return (new Query($db))->setQuery($sql);
+            });
+            
+            $result = $query->execute(
+                $iLimit
+            );
+*/
+        }
+
+/*
+        foreach ($result->getResult() as $row){
+            //ユーザー情報読込
+            $user = $this->GetNickName($row->token);
+
+            if ($user){
+                $tmp["id"] = $row->id;
+                $tmp["title"] = $row->title;
+                $tmp["detail_m"] = $row->detail_m;
+                $tmp["nickname"] = $user->nickname;
+                $tmp["updatedDate"] = $row->updatedDate;
+                $tmp["like_cnt"] = $row->like_cnt ? $row->like_cnt :0;
+                $tmp["comment_cnt"] = $row->comment_cnt ? $row->comment_cnt :0;
+                $tmp["like_flg"] = false;
+                $tmp["comment_flg"] = false;
+                if ($row->filePath == null){
+                    $tmp["imgPath"] = null;
+                }
+                else{
+                    $tmp["imgPath"] = "uploads/report/after/" . $row->filePath;
+                }
+                
+                array_push($data, $tmp);
+
+                if ($cnt >= $iLimit){
+                    break;
+                }
+                $cnt = $cnt + 1;
+            }
+        }
+*/
+        $cnt = 0;
+        foreach ($result as $row){
+            //ユーザー情報読込
+            $user = $this->GetNickName($row["token"]);
+
+            if ($user){
+                $tmp["id"] = $row["id"];
+                $tmp["title"] = $row["title"];
+                $tmp["detail_m"] = $row["detail_m"];
+                $tmp["nickname"] = $user->nickname;
+                $tmp["updatedDate"] = $row["updatedDate"];
+                $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
+                $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
+                $tmp["like_flg"] = false;
+                $tmp["comment_flg"] = false;
+                if ($row["filePath"] == null){
+                    $tmp["imgPath"] = null;
+                }
+                else{
+                    $tmp["imgPath"] = "/report/after/" . $row["filePath"];
+                }
+                
+                array_push($data, $tmp);
+
+                if ($cnt >= $iLimit){
+                    break;
+                }
+                $cnt = $cnt + 1;
+            }
+        }
+
+        return $data;
+    }
+
+    //利用者テーブルからニックネーム取得
+    private function GetNickName($iToken)
     {
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");

@@ -110,7 +110,7 @@ class ReportListController extends ApiController
         return $this->respond($response);
     }
     
-    //生産者の記事を取得
+    //トピックスを取得
     public function GetTopics()
     {
         $signature = (string)$this->request->getPost('user[signature]');
@@ -132,9 +132,8 @@ class ReportListController extends ApiController
 
         try{
             //トピックステーブルから該当の魚種トピックスを取得
-            $topmodel = new TopicsModel();
-            //$response['topics'] = $topmodel->GetKindData($kind);    
-            $response['topics'] = $topmodel->GetKindData();    
+            $Repmodel = new ReportViewModel();
+            $response['topics'] = $Repmodel->GetTopics();    
         }
         catch(DatabaseException $e){
             // データベース例外

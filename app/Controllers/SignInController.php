@@ -59,9 +59,9 @@ class SignInController extends ApiController
                     "message" => "サインインに失敗しました。メールアドレスかパスワードに誤りがあります。"
                     ], 407);
                 }
-                
-                // 署名生成
-                $signature = $user->createSignature();
+
+                // 署名生成(1時間有効)
+                $signature = $user->createSignature(60*60*1);
                 
                 //正常
                 // [200]

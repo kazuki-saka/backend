@@ -83,5 +83,34 @@ class HomeController extends ApiController
         }        
 
         return $this->respond($response);
+
+/*
+        if ($this->request->getMethod() === 'post'){
+            $jwt = $this->request->getPost('Home[jwt]');
+            //$ukbn = $this->request->getPost('Home[ukbn]');
+
+            $isjwt = $this->jwtLib->is_jwt_valid($jwt);
+            
+            if ($isjwt){
+                //有効な認証JWT                
+                $response['status'] = 200;
+
+                //PR動画テーブルから情報取得
+                $prmodel = new PrModel();
+                $response['pr'] = $prmodel->GetData();
+            }
+            else{
+                //無効な認証JWT
+                $response['status'] = 202;
+            }
+
+            //$response['status'] = 0;
+        }
+        else{
+            $response['status'] = 209;
+        }
+
+        return $this->respond($response);
+*/
     }
 }

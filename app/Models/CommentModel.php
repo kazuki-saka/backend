@@ -54,7 +54,7 @@ class CommentModel extends Model
         $query = $this->db->prepare(static function ($db) 
         {
             $sql = "SELECT t_comment.num, comment, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) as nickname, t_comment.updatedDate FROM cmsb_t_comments AS t_comment
-                    LEFT JOIN cmsb_m_user AS m_user ON t_comment.token = m_user.token WHERE t_comment.id = ? ORDER BY t_comment.updatedDate DESC";
+                    LEFT JOIN cmsb_m_user AS m_user ON t_comment.token = m_user.token WHERE t_comment.id = ? ORDER BY t_comment.updatedDate";
             return (new Query($db))->setQuery($sql);
         });
 

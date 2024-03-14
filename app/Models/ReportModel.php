@@ -93,11 +93,15 @@ class ReportModel extends Model
                 $iToken
             );
 
-            $data = $result->getResult();
-            return 200;
+            foreach ($result->getResult() as $row){
+                $id = $row->num;
+                break;
+            }
+
+            return $id;
         }
         else{
-            return 401;
+            return -1;
         }
     }
 }
