@@ -62,5 +62,8 @@ $routes->post('/api/inquiry/view', 'InquiryController::View');
 //問い合わせ時のメール送信
 $routes->post('/api/inquiry/send', 'InquiryController::Send');
 
+//自分がしたほしいね一覧取得
+$routes->post('/api/mernu/likelist', 'MenuController::GetLikeList');
+
 
 $routes->get('(:any)', 'Pages::view/$1');

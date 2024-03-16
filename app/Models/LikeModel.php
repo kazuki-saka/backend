@@ -120,4 +120,35 @@ class LikeModel extends Model
 
         return $ret;
     }
+
+    public function GetMyLikeReport($iToken)
+    {
+        // 暗号鍵取得
+        $key = getenv("database.default.encryption.key");
+
+        // クエリ生成
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT t_rep.num as reportid, t_rep.title, t_rep.fishkind, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_lik.updatedDate
+                FROM cmsb_t_likes as t_lik
+                LEFT JOIN cmsb_t_report as t_rep ON t_rep.num = t_lik.id 
+                LEFT JOIN cmsb_m_user AS m_usr ON m_usr.token = t_rep.token
+                WHERE t_lik.token = ? AND t_rep.DeployFlg = 1
+                ORDER BY t_lik.updatedDate DESC";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $key,
+            $iToken
+        );
+
+        $data = [];
+        foreach ($result->getResult() as $row){
+            array_push($data, $row);
+        }
+       
+        return $data;
+    }
 }
