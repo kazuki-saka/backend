@@ -102,6 +102,7 @@ class InquiryController extends ApiController
                 "postcode" => $postcode,
                 "address" => $address,
                 "detail" => $detail,
+                "fishkind" => $fishkind
             ]);
 
             $inquiry->SendInquiry();

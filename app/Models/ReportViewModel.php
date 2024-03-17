@@ -29,25 +29,6 @@ class ReportViewModel extends Model
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");
 
-/*        
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "SELECT id, title, detail_m, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, updatedDate 
-                FROM cmsb_v_report WHERE fishkind = ?";
-            return (new Query($db))->setQuery($sql);
-        });
-
-        // クエリ実行
-        $result = $query->execute(
-            $key,
-            $iKind
-        );
-
-        foreach ($result->getResult() as $row){
-            array_push($data, $row);
-        }
-*/
         $data = [];
         if ($iMarketFlg == true){
             //市場関係者の記事
@@ -57,8 +38,6 @@ class ReportViewModel extends Model
             //生産者の記事
             $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->findAll();
         }
-
-        //$result = $this->findAll();
         
         foreach ($result as $row){
             //ユーザー情報読込
@@ -78,7 +57,7 @@ class ReportViewModel extends Model
                     $tmp["imgPath"] = null;
                 }
                 else{
-                    $tmp["imgPath"] = "uploads/report/after/" . $row["filePath"];
+                    $tmp["imgPath"] = "/report/after/" . $row["filePath"];
                 }
                 
                 array_push($data, $tmp);
@@ -89,7 +68,7 @@ class ReportViewModel extends Model
     }
 
     //記事の最新20件分をトピックスとして取得
-    public function GetTopics($iKind = null, $iLimit = 20)
+    public function GetTopics($iKind = null, $iLimit = 20, $iOffset = 0)
     {
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");
@@ -97,69 +76,11 @@ class ReportViewModel extends Model
         $data = [];
 
         if ($iKind != null){
-            // クエリ生成
-            $query = $this->db->prepare(static function ($db) 
-            {
-                $sql = "SELECT * FROM cmsb_v_report
-                            WHERE fishkind = ? ORDER BY updatedDate DESC LIMIT ?";
-                return (new Query($db))->setQuery($sql);
-            });
-            
-            $result = $query->execute(
-                $iKind,
-                $iLimit
-            );
-        }
-        else{
-            // クエリ生成
-            //$result = $this->where(['DeployFlg' => 1])->findAll()->orderBy("updatedDate","DESC")->limit(10);
-            $result = $this->where(['DeployFlg' => 1])->findAll();
-
-/*            
-            $query = $this->db->prepare(static function ($db) 
-            {
-                $sql = "SELECT * FROM cmsb_v_report
-                            ORDER BY updatedDate DESC LIMIT ?";
-                return (new Query($db))->setQuery($sql);
-            });
-            
-            $result = $query->execute(
-                $iLimit
-            );
-*/
+            $result = $this->where(['fishkind' => $iKind]);
         }
 
-/*
-        foreach ($result->getResult() as $row){
-            //ユーザー情報読込
-            $user = $this->GetNickName($row->token);
+        $result = $this->where(['DeployFlg' => 1])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
 
-            if ($user){
-                $tmp["id"] = $row->id;
-                $tmp["title"] = $row->title;
-                $tmp["detail_m"] = $row->detail_m;
-                $tmp["nickname"] = $user->nickname;
-                $tmp["updatedDate"] = $row->updatedDate;
-                $tmp["like_cnt"] = $row->like_cnt ? $row->like_cnt :0;
-                $tmp["comment_cnt"] = $row->comment_cnt ? $row->comment_cnt :0;
-                $tmp["like_flg"] = false;
-                $tmp["comment_flg"] = false;
-                if ($row->filePath == null){
-                    $tmp["imgPath"] = null;
-                }
-                else{
-                    $tmp["imgPath"] = "uploads/report/after/" . $row->filePath;
-                }
-                
-                array_push($data, $tmp);
-
-                if ($cnt >= $iLimit){
-                    break;
-                }
-                $cnt = $cnt + 1;
-            }
-        }
-*/
         $cnt = 0;
         foreach ($result as $row){
             //ユーザー情報読込

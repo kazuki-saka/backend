@@ -41,13 +41,9 @@ class HomeController extends ApiController
 
         // フォームデータ取得
         $signature = (string)$this->request->getPost('user[signature]');
+        $offset = (integer)$this->request->getPost('user[offset]');
         //$this->echoEx("getData=", $signature);
 
-        // User取得
-        //$getUser = $getData->user;
-        // 認証署名取得
-        //$signature = @$getUser["signature"];
-        
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
         
@@ -60,9 +56,9 @@ class HomeController extends ApiController
             ], intval(@$validated["status"]));
         }
 
-        $response['status'] = @$validated["status"];
-
         try{
+            $response['status'] = @$validated["status"];
+
             //レポートビューテーブルかトピックスを取得
             $Repmodel = new ReportViewModel();
             $response['topics'] = $Repmodel->GetTopics();    
