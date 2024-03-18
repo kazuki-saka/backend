@@ -52,9 +52,9 @@ class MenuController extends ApiController
         try{
             $user = @$validated["user"];
 
-            //ほしいねテーブルから自分がほしいねをした記事を取得
-            $likemodel = new LikeModel();
-            $response['likereports'] = $likemodel->GetMyLikeReport($user->token);    
+            //ビューテーブルから自分がほしいねをした記事を取得
+            $Repmodel = new ReportViewModel();
+            $response['likereports'] = $Repmodel->GetMyLikeReport($user->token);    
             $response['status'] = @$validated["status"];
         }
         catch(DatabaseException $e){

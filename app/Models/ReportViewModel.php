@@ -51,9 +51,8 @@ class ReportViewModel extends Model
                 $tmp["updatedDate"] = $row["updatedDate"];
                 $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
-
-                $tmp["like_flg"] = $this->IsLike($row["id"], $row["token"]);                
-                $tmp["comment_flg"] = $this->IsComment($row["id"], $row["token"]);
+                $tmp["like_flg"] = false;                
+                $tmp["comment_flg"] = false;
                 if ($row["filePath"] == null){
                     $tmp["imgPath"] = null;
                 }
@@ -77,12 +76,12 @@ class ReportViewModel extends Model
         $data = [];
 
         if ($iKind != null){
-            $result = $this->where(['fishkind' => $iKind]);
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
+        }
+        else{
+            $result = $this->where(['DeployFlg' => 1])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
         }
 
-        $result = $this->where(['DeployFlg' => 1])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
-
-        $cnt = 0;
         foreach ($result as $row){
             //ユーザー情報読込
             $user = $this->GetNickName($row["token"]);
@@ -95,8 +94,8 @@ class ReportViewModel extends Model
                 $tmp["updatedDate"] = $row["updatedDate"];
                 $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
-                $tmp["like_flg"] = $this->IsLike($row["id"], $row["token"]);                
-                $tmp["comment_flg"] = $this->IsComment($row["id"], $row["token"]);
+                $tmp["like_flg"] = false;                
+                $tmp["comment_flg"] = false;
                 if ($row["filePath"] == null){
                     $tmp["imgPath"] = null;
                 }
@@ -105,49 +104,61 @@ class ReportViewModel extends Model
                 }
                 
                 array_push($data, $tmp);
-
-                if ($cnt >= $iLimit){
-                    break;
-                }
-                $cnt = $cnt + 1;
             }
         }
 
         return $data;
     }
 
-    private function IsLike($iId, $iToken)
+    //自分がほしいねした記事を一覧で取得
+    public function GetMyLikeReport($iToken)
     {
+        $data = [];
+        //ユーザー情報読込
+        $user = $this->GetNickName($iToken);
+
+        // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT id FROM cmsb_t_likes WHERE id = ? AND token = ?";
+            $sql = "SELECT id
+                FROM cmsb_t_likes
+                WHERE token = ?
+                ORDER BY updatedDate DESC";
             return (new Query($db))->setQuery($sql);
         });
 
         // クエリ実行
-        $result = $query->execute(
-            $iId,
+        $likeresult = $query->execute(
             $iToken
         );
 
-        return $result->getResult() ? true : false;
-    }
-
-    private function IsComment($iId, $iToken)
-    {
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "SELECT id FROM cmsb_t_comments WHERE id = ? AND token = ?";
-            return (new Query($db))->setQuery($sql);
-        });
-
-        // クエリ実行
-        $result = $query->execute(
-            $iId,
-            $iToken
-        );
-
-        return $result->getRow() ? true : false;
+        $data = [];
+        foreach ($likeresult->getResult() as $likerow){
+            $result = $this->where(['id' => $likerow->id, 'DeployFlg' => 1])->findAll();
+            foreach ($result as $row){
+                if ($user){
+                    $tmp["id"] = $row["id"];
+                    $tmp["title"] = $row["title"];
+                    $tmp["detail_m"] = $row["detail_m"];
+                    $tmp["nickname"] = $user->nickname;
+                    $tmp["updatedDate"] = $row["updatedDate"];
+                    $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
+                    $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
+                    $tmp["like_flg"] = false;                
+                    $tmp["comment_flg"] = false;
+                    if ($row["filePath"] == null){
+                        $tmp["imgPath"] = null;
+                    }
+                    else{
+                        $tmp["imgPath"] = "/report/after/" . $row["filePath"];
+                    }
+                    
+                    array_push($data, $tmp);
+                }
+            }
+        }
+        
+        return $data;
     }
 
     //利用者テーブルからニックネーム取得
