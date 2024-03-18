@@ -51,8 +51,9 @@ class ReportViewModel extends Model
                 $tmp["updatedDate"] = $row["updatedDate"];
                 $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
-                $tmp["like_flg"] = false;
-                $tmp["comment_flg"] = false;
+
+                $tmp["like_flg"] = $this->IsLike($row["id"], $row["token"]);                
+                $tmp["comment_flg"] = $this->IsComment($row["id"], $row["token"]);
                 if ($row["filePath"] == null){
                     $tmp["imgPath"] = null;
                 }
@@ -94,8 +95,8 @@ class ReportViewModel extends Model
                 $tmp["updatedDate"] = $row["updatedDate"];
                 $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
                 $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
-                $tmp["like_flg"] = false;
-                $tmp["comment_flg"] = false;
+                $tmp["like_flg"] = $this->IsLike($row["id"], $row["token"]);                
+                $tmp["comment_flg"] = $this->IsComment($row["id"], $row["token"]);
                 if ($row["filePath"] == null){
                     $tmp["imgPath"] = null;
                 }
@@ -113,6 +114,40 @@ class ReportViewModel extends Model
         }
 
         return $data;
+    }
+
+    private function IsLike($iId, $iToken)
+    {
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT id FROM cmsb_t_likes WHERE id = ? AND token = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $iId,
+            $iToken
+        );
+
+        return $result->getResult() ? true : false;
+    }
+
+    private function IsComment($iId, $iToken)
+    {
+        $query = $this->db->prepare(static function ($db) 
+        {
+            $sql = "SELECT id FROM cmsb_t_comments WHERE id = ? AND token = ?";
+            return (new Query($db))->setQuery($sql);
+        });
+
+        // クエリ実行
+        $result = $query->execute(
+            $iId,
+            $iToken
+        );
+
+        return $result->getRow() ? true : false;
     }
 
     //利用者テーブルからニックネーム取得

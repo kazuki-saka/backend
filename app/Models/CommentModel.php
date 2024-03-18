@@ -34,11 +34,17 @@ class CommentModel extends Model
             $iToken,
         );
         
+/*
         $data['id'] = [];
         foreach ($result->getResult() as $row){
             if (!in_array($row->id, $data['id'])){
                 array_push($data['id'], $row->id);
             }
+        }
+*/
+        $data = [];
+        foreach ($result->getResult() as $row){
+            array_push($data, $row->id);
         }
 
         return $data;

@@ -30,9 +30,11 @@ class ReportModel extends Model
         // クエリ生成
         $query = $this->db->prepare(static function ($db) 
         {
-            $sql = "SELECT t_rep.num as id, t_rep.fishkind, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname, t_rep.updatedDate
+            $sql = "SELECT t_rep.num as id, t_rep.fishkind, t_rep.title, t_rep.detail_modify, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) AS nickname,
+                        t_rep.updatedDate, upload.filePath
                 FROM cmsb_t_report as t_rep
                 INNER JOIN cmsb_m_user AS m_usr ON m_usr.token = t_rep.token
+                LEFT JOIN cmsb_uploads AS upload ON upload.recordNum = t_rep.num AND upload.fieldName = 'imgafter'
                 WHERE t_rep.num = ? AND t_rep.DeployFlg = 1";
             return (new Query($db))->setQuery($sql);
         });
@@ -47,6 +49,9 @@ class ReportModel extends Model
         foreach ($result->getResult() as $row){
             //array_push($data, $row);
             $data = $row;
+            if($data->filePath){
+                $data->filePath= "/report/after/" .  $data->filePath;
+            }  
             break;
         }
         //$data = $result->getResult();
@@ -54,7 +59,8 @@ class ReportModel extends Model
         //改行コードを<br>に変換する
         //$data->detail_modify = nl2br($data->detail_modify, false);
         //<BR>を消す
-        $data->detail_modify = preg_replace('/<br[[:space:]]*\/?[[:space:]]*>/i', "", $data->detail_modify);
+        //<br>を改行コードに変換
+        $data->detail_modify = preg_replace('/<br[[:space:]]*\/?[[:space:]]*>/i', "\n", $data->detail_modify);
 
         return $data;         
     }

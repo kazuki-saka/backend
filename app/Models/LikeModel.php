@@ -36,9 +36,15 @@ class LikeModel extends Model
             $iToken
         );
         
+        /*
         $data['id'] = [];
         foreach ($result->getResult() as $row){
             array_push($data['id'], $row->id);
+        }
+*/
+        $data = [];
+        foreach ($result->getResult() as $row){
+            array_push($data, $row->id);
         }
 
         return $data;
