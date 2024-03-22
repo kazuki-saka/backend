@@ -56,7 +56,7 @@ class InquiryEntity extends Entity
 
             ob_start();
             $body = $temlate->inquiry_content;
-            $body = str_replace("%魚種%", $this->fishkind, $body);
+            $body = str_replace("%魚種%", UtilHelper::GetFishKindName($this->fishkind), $body);
             $body = str_replace("%店名%", $this->shopname, $body);
             $body = str_replace("%登録名%", $this->rejistname, $body);
             $body = str_replace("%郵便番号%", $this->postcode, $body);

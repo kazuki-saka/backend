@@ -243,6 +243,28 @@ class UtilHelper
     return (array)$decoded;
   }
 
+  // 魚種名の取得
+  public static function GetFishKindName(string $iValue)
+  {
+    $name = "";
+    switch ($iValue){
+      case 1:
+        $name = "福井サーモン";
+        break;
+      case 2:
+        $name = "若狭フグ";
+        break;
+      case 3:
+        $name = "敦賀真鯛";
+        break;
+      case 4:
+        $name = "若狭まはた";
+        break;
+    }
+
+    return $name;
+  } 
+
   public static function echoEx($iStr, $iValue)
   {
     echo($iStr);
