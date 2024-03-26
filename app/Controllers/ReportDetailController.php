@@ -189,6 +189,7 @@ class ReportDetailController extends ApiController
         $kind = (string)$this->request->getPost('report[kind]');
         $detail = (string)$this->request->getPost('report[detail]');
         $imgpath = (string)$this->request->getPost('report[imgpath]');
+        $url = (string)$this->request->getPost('report[url]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -213,11 +214,69 @@ class ReportDetailController extends ApiController
 
             //画像の登録
             if ($imgpath){
+                //$name = $imgpath->getRandomName();
+                //$url->move('../public/uploads/report', $name);
+
                 $uploadmodel = new UploadModel();
-                $response['status'] = $uploadmodel->AddData($id, $imgpath);    
+                $response['status'] = $uploadmodel->AddData($id, $token . $imgpath);
             }
             else{
                 $response['status'] = 200;
+            }
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+              ], 500);
+            }
+        catch (\Exception $e){
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+              ], 500);
+        }
+        
+        return $this->respond($response);
+    }
+
+    //記事の画像投稿
+    public function RejistReportImg()
+    {
+        $signature = (string)$this->request->getPost('user[signature]');
+        $imgname = (string)$this->request->getPost('report[imgpath]');
+        $imgdata = (string)$this->request->getPost('report[imgdata]');
+
+        // 署名検証
+        $validated = $this->ValidateUserSignature($signature);
+
+        // 署名検証エラー
+        if (intval(@$validated["status"]) !== 200)
+        {
+            return $this->fail([
+            "status" => @$validated["status"],
+            "message" => @$validated["message"]
+            ], intval(@$validated["status"]));
+        }
+        
+        try{
+            //書名からトークンの取得
+            $user = @$validated["user"];
+            $token = $user->token;        
+            
+            //base64のデータをデコード
+            $img = base64_decode($imgdata);
+
+            //画像の登録
+            if ($img){
+                //画像データをファイルに保存
+                file_put_contents('../cmsb/uploads/report/before/' . $token . $imgname, $img); 
+                $response['status'] = 200;
+            }
+            else{
+                $response['status'] = 501;
             }
         }
         catch(DatabaseException $e){

@@ -56,6 +56,9 @@ $routes->post('/api/detail/Comment', 'ReportDetailController::RejistComment');
 //記事の投稿
 $routes->post('/api/report/add', 'ReportDetailController::RejistReport');
 
+//記事の画像投稿
+$routes->post('/api/report/addimg', 'ReportDetailController::RejistReportImg');
+
 //問い合わせ時の初期表示
 $routes->post('/api/inquiry/view', 'InquiryController::View');
 
