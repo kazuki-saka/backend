@@ -109,7 +109,8 @@ class PreflightEntity extends Entity
     }
     catch (Exception $e)
     {
-      
+      echo("mail err\n");
+      echo($e);
     }
   }
   

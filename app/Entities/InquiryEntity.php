@@ -36,7 +36,7 @@ class InquiryEntity extends Entity
     /**
      * 問い合わせメール送信関数
      */
-    public function SendInquiry(): void
+    public function SendInquiry(string $iAdr): void
     {
         // TemplatesModel生成
         $templatesModel = new TemplatesModel();
@@ -58,6 +58,7 @@ class InquiryEntity extends Entity
             $body = $temlate->inquiry_content;
             $body = str_replace("%魚種%", UtilHelper::GetFishKindName($this->fishkind), $body);
             $body = str_replace("%店名%", $this->shopname, $body);
+            $body = str_replace("%メール%", $iAdr, $body);
             $body = str_replace("%登録名%", $this->rejistname, $body);
             $body = str_replace("%郵便番号%", $this->postcode, $body);
             $body = str_replace("%住所%", $this->address, $body);
@@ -87,4 +88,57 @@ class InquiryEntity extends Entity
 
     }
 
+    /**
+     * 問い合わせメール送信関数
+     */
+    public function SendInquiryThanks(string $iAdr): void
+    {
+        // TemplatesModel生成
+        $templatesModel = new TemplatesModel();
+        // Template取得
+        $temlate = $templatesModel->where("num", 1)->first();
+
+        // 言語、内部エンコーディングを指定
+        mb_language("japanese");
+        mb_internal_encoding("UTF-8");
+
+        // PHPMailer
+        $mailer = new PHPMailer(true);
+        try{
+            require ROOTPATH . "vendor/autoload.php";
+            require ROOTPATH . "vendor/phpmailer/phpmailer/language/phpmailer.lang-ja.php";
+
+            ob_start();
+            $body = $temlate->inquiry_tanks_content;
+            $body = str_replace("%魚種%", UtilHelper::GetFishKindName($this->fishkind), $body);
+            $body = str_replace("%店名%", $this->shopname, $body);
+            $body = str_replace("%メール%", $iAdr, $body);
+            $body = str_replace("%登録名%", $this->rejistname, $body);
+            $body = str_replace("%郵便番号%", $this->postcode, $body);
+            $body = str_replace("%住所%", $this->address, $body);
+            $body = str_replace("%問い合わせ内容%", $this->detail, $body);
+            ob_clean();
+
+            $mailer->isSMTP();
+            $mailer->SMTPAuth = true;
+            $mailer->Host = getenv("smtp.default.hostname");
+            $mailer->Username = getenv("smtp.default.username");
+            $mailer->Password = getenv("smtp.default.password");
+            $mailer->Port = intval(getenv("smtp.default.port"));
+            $mailer->SMTPSecure = "tls";
+            $mailer->CharSet = "utf-8";
+            $mailer->Encoding = "base64";
+            $mailer->setFrom(getenv("smtp.default.from"), "FUKUI BRAND FISH");
+            $mailer->addAddress($iAdr);
+            $mailer->Subject = $temlate->inquiry_tanks_title; 
+            $mailer->Body = UtilHelper::Br2Nl($body);
+
+            $mailer->send();      
+        }
+        catch (Exception $e)
+        {
+          
+        }
+
+    }
 }

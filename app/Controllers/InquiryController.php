@@ -105,7 +105,8 @@ class InquiryController extends ApiController
                 "fishkind" => $fishkind
             ]);
 
-            $inquiry->SendInquiry();
+            $inquiry->SendInquiry($user->username);
+            $inquiry->SendInquiryThanks($user->username);
             $response["status"] = 200;
         }
         catch (\Exception $e){
