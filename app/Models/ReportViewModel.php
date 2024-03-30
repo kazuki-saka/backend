@@ -32,11 +32,11 @@ class ReportViewModel extends Model
         $data = [];
         if ($iMarketFlg == true){
             //市場関係者の記事
-            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 2])->findAll();
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 2])->orderBy('updatedDate','DESC')->findAll();
         }
         else{
             //生産者の記事
-            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->findAll();
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->orderBy('updatedDate','DESC')->findAll();
         }
         
         foreach ($result as $row){
@@ -155,6 +155,43 @@ class ReportViewModel extends Model
                     
                     array_push($data, $tmp);
                 }
+            }
+        }
+        
+        return $data;
+    }
+
+    //自分が投稿した記事を一覧で取得
+    public function GetMyRejistReport($iToken)
+    {
+        $data = [];
+        //ユーザー情報読込
+        $user = $this->GetNickName($iToken);
+
+        $result = $this->where(['token' => $iToken, 'DeployFlg' => 1])->orderBy('updatedDate','DESC')->findAll();
+
+        $data = [];
+        $user = $this->GetNickName($iToken);
+
+        foreach ($result as $row){
+            if ($user){
+                $tmp["id"] = $row["id"];
+                $tmp["title"] = $row["title"];
+                $tmp["detail_m"] = $row["detail_m"];
+                $tmp["nickname"] = $user->nickname;
+                $tmp["updatedDate"] = $row["updatedDate"];
+                $tmp["like_cnt"] = $row["like_cnt"] ? $row["like_cnt"] :0;
+                $tmp["comment_cnt"] = $row["comment_cnt"] ? $row["comment_cnt"] :0;
+                $tmp["like_flg"] = false;                
+                $tmp["comment_flg"] = false;
+                if ($row["filePath"] == null){
+                    $tmp["imgPath"] = null;
+                }
+                else{
+                    $tmp["imgPath"] = "/report/after/" . $row["filePath"];
+                }
+                
+                array_push($data, $tmp);
             }
         }
         

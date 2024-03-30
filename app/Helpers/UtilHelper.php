@@ -249,10 +249,10 @@ class UtilHelper
     $name = "";
     switch ($iValue){
       case 1:
-        $name = "福井サーモン";
+        $name = "ふくいサーモン";
         break;
       case 2:
-        $name = "若狭フグ";
+        $name = "若狭ふぐ";
         break;
       case 3:
         $name = "敦賀真鯛";

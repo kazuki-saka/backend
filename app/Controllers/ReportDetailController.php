@@ -223,6 +223,10 @@ class ReportDetailController extends ApiController
             else{
                 $response['status'] = 200;
             }
+
+            //管理者にメールを送る
+            $user->SendReportNotify($kind, $title);
+
         }
         catch(DatabaseException $e){
             // データベース例外

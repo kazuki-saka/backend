@@ -68,6 +68,9 @@ $routes->post('/api/inquiry/send', 'InquiryController::Send');
 //自分がしたほしいね一覧取得
 $routes->post('/api/mernu/likelist', 'MenuController::GetLikeList');
 
+//自分が投稿した一覧取得
+$routes->post('/api/mernu/Rejistlist', 'MenuController::GetRejistList');
+
 $routes->post('/api/test', 'UserTempController::test');
 
 $routes->get('(:any)', 'Pages::view/$1');

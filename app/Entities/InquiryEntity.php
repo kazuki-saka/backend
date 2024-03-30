@@ -139,6 +139,5 @@ class InquiryEntity extends Entity
         {
           
         }
-
     }
 }

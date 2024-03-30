@@ -75,4 +75,47 @@ class MenuController extends ApiController
         return $this->respond($response);
     }
 
+    //メニューから自分が投稿した一覧を選択した時の表示
+    public function GetRejistList()
+    {
+        // フォームデータ取得
+        $signature = (string)$this->request->getPost('user[signature]');
+
+        // 署名検証
+        $validated = $this->ValidateUserSignature($signature);
+        
+        // 署名検証エラー
+        if (intval(@$validated["status"]) !== 200)
+        {
+            return $this->fail([
+            "status" => @$validated["status"],
+            "message" => @$validated["message"]
+            ], intval(@$validated["status"]));
+        }
+
+        try{
+            $user = @$validated["user"];
+
+            //ビューテーブルから自分がほしいねをした記事を取得
+            $Repmodel = new ReportViewModel();
+            $response['rejistreports'] = $Repmodel->GetMyRejistReport($user->token);    
+            $response['status'] = @$validated["status"];
+        }
+        catch(DatabaseException $e){
+            // データベース例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "データベースでエラーが発生しました。"
+              ], 500);
+            }
+        catch (\Exception $e){
+            // その他例外
+            return $this->fail([
+                "status" => 500,
+                "message" => "予期しない例外が発生しました。"
+              ], 500);
+        }        
+
+        return $this->respond($response);
+    }
 }

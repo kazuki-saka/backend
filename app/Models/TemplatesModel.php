@@ -15,6 +15,8 @@ class TemplatesModel extends Model
     "user_complete_notice_content",
     "inquiry_title",
     "inquiry_detail",
+    "rejist_notify_title",
+    "rejist_notify_detail",
     "title",
   ];
   protected $skipValidation = false;

@@ -118,4 +118,55 @@ class UserEntity extends Entity
     {
     }
   }
+
+    /**
+     * 登録メール連絡送信関数
+     */
+    public function SendReportNotify(string $iFishKind, string $iTitle): void
+    {
+        // TemplatesModel生成
+        $templatesModel = new TemplatesModel();
+        // Template取得
+        $temlate = $templatesModel->where("num", 1)->first();
+
+        // 言語、内部エンコーディングを指定
+        mb_language("japanese");
+        mb_internal_encoding("UTF-8");
+
+        // PHPMailer
+        $mailer = new PHPMailer(true);
+
+        try{
+            require ROOTPATH . "vendor/autoload.php";
+            require ROOTPATH . "vendor/phpmailer/phpmailer/language/phpmailer.lang-ja.php";
+
+            ob_start();
+            $body = $temlate->rejist_notify_detail;
+            $body = str_replace("%魚種%", UtilHelper::GetFishKindName($iFishKind), $body);
+            $body = str_replace("%タイトル%", $iTitle, $body);
+            $body = str_replace("%メール%", $this->username, $body);
+            $body = str_replace("%登録名%", $this->rejistname, $body);
+            ob_clean();
+
+            $mailer->isSMTP();
+            $mailer->SMTPAuth = true;
+            $mailer->Host = getenv("smtp.default.hostname");
+            $mailer->Username = getenv("smtp.default.username");
+            $mailer->Password = getenv("smtp.default.password");
+            $mailer->Port = intval(getenv("smtp.default.port"));
+            $mailer->SMTPSecure = "tls";
+            $mailer->CharSet = "utf-8";
+            $mailer->Encoding = "base64";
+            $mailer->setFrom(getenv("smtp.default.from"), "FUKUI BRAND FISH");
+            $mailer->addAddress(getenv("smtp.default.from"));
+            $mailer->Subject = $temlate->rejist_notify_title; 
+            $mailer->Body = UtilHelper::Br2Nl($body);
+ 
+            $mailer->send();      
+        }
+        catch (Exception $e)
+        {
+          
+        }
+    }
 }
