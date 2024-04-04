@@ -24,7 +24,7 @@ class ReportViewModel extends Model
     // ++++++++++ メソッド ++++++++++
 
     //魚種単位で記事を取得（ビューテーブルの方を参照）
-    public function GetKindData($iKind, $iMarketFlg)
+    public function GetKindData($iKind, $iMarketFlg, $iLimit = 20, $iOffset = 0)
     {
         // 暗号鍵取得
         $key = getenv("database.default.encryption.key");
@@ -32,11 +32,11 @@ class ReportViewModel extends Model
         $data = [];
         if ($iMarketFlg == true){
             //市場関係者の記事
-            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 2])->orderBy('updatedDate','DESC')->findAll();
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 2])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
         }
         else{
             //生産者の記事
-            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->orderBy('updatedDate','DESC')->findAll();
+            $result = $this->where(['fishkind' => $iKind, 'DeployFlg' => 1, 'report_kbn' => 1])->orderBy('updatedDate','DESC')->findAll($iLimit, $iOffset);
         }
         
         foreach ($result as $row){

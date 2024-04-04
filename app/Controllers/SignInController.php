@@ -60,8 +60,8 @@ class SignInController extends ApiController
                     ], 407);
                 }
 
-                // 署名生成(10日間有効)
-                $signature = $user->createSignature(60*60*24*10);
+                // 署名生成(1年間有効)
+                $signature = $user->createSignature(60*60*24*365);
                 
                 //正常
                 // [200]

@@ -277,19 +277,13 @@ class ReportDetailController extends ApiController
             if ($img){
                 //画像データをファイルに保存
                 file_put_contents('../cmsb/uploads/report/before/' . $token . $imgname, $img); 
+                //file_put_contents('D:/xampp/Sites/fukui-fish-app-cmsb/uploads/report/before/' . $token . $imgname, $img); 
                 $response['status'] = 200;
             }
             else{
                 $response['status'] = 501;
             }
         }
-        catch(DatabaseException $e){
-            // データベース例外
-            return $this->fail([
-                "status" => 500,
-                "message" => "データベースでエラーが発生しました。"
-              ], 500);
-            }
         catch (\Exception $e){
             // その他例外
             return $this->fail([
