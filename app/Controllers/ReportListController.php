@@ -69,7 +69,8 @@ class ReportListController extends ApiController
     public function GetFishmanReport()
     {
         $signature = (string)$this->request->getPost('user[signature]');
-        $kind = (string)$this->request->getPost('user[kind]');
+        $kind = (string)$this->request->getPost('report[kind]');
+        $index = (string)$this->request->getPost('report[index]');
 
         // 署名検証
         $validated = $this->ValidateUserSignature($signature);
@@ -90,7 +91,7 @@ class ReportListController extends ApiController
             $Repmodel = new ReportViewModel();
             $MarketFlg = false;
 
-            $response['FishmanReports']  = $Repmodel->GetKindData($kind, $MarketFlg);
+            $response['FishmanReports']  = $Repmodel->GetKindData($kind, $MarketFlg, 20, $index);
         }
         catch(DatabaseException $e){
             // データベース例外
