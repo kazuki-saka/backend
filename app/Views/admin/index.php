@@ -3,6 +3,7 @@
 use CodeIgniter\Boot;
 use Config\Paths;
 
+log_message('debug', "test0");
 $minPhpVersion = '8.1';
 if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
     $message = sprintf(
@@ -23,11 +24,14 @@ if (getcwd() . DIRECTORY_SEPARATOR !== FCPATH) {
     chdir(FCPATH);
 }
 
-require '/home/xs562738/makejam.co.jp/public_html/seikyu/app/Config/Paths.php';
+log_message('debug', "test1");
+require '/home/fsdev/www/app/Config/Paths.php';
+log_message('debug', "test2");
 
 
 $paths = new Paths();
 
 require $paths->systemDirectory . '/Boot.php';
+log_message('debug', "test3");
 
 exit(Boot::bootWeb($paths));

@@ -76,7 +76,14 @@ $routes->get('admin/login', 'Admin\LoginController::index');
 $routes->post('admin/login', 'Admin\LoginController::auth');
 $routes->get('admin/logout', 'Admin\LoginController::logout');
 
+$routes->group('admin', ['filter' => 'adminAuth'], function($routes) {
+$routes->get('/', 'Admin\DashboardController::index');
+$routes->get('customers', 'Admin\CustomerController::index');
+});
 
+$routes->group('admin', ['filter' => 'adminAuth'], function($routes) {
+    $routes->get('customers', 'Admin\CustomerController::index');
+});
 
 $routes->post('/api/test', 'UserTempController::test');
 

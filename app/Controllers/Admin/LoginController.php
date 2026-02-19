@@ -8,12 +8,14 @@ class LoginController extends BaseController
 {
     public function index()
     {
+        log_message('debug', 'LoginController start');
         return view('admin/login');
     }
 
     public function auth()
     {
         $password = $this->request->getPost('password');
+        log_message('debug', 'LoginController password=' . $password);
 
         if ($password === getenv('admin.password')) {
             session()->set('is_admin', true);

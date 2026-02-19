@@ -32,7 +32,7 @@
                 </div>
             <?php endif; ?>
 
-            <form action="/admin/login" method="post">
+            <form action="/public/admin/login" method="post">
                 <div class="input-group mb-3">
                     <input type="password" name="password" class="form-control" placeholder="パスワード" required>
                     <div class="input-group-append">

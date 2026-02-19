@@ -7,12 +7,12 @@
     <title><?= $title ?? '管理画面' ?></title>
 
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="/adminlte/assets/css/adminlte.css">
-    <link rel="stylesheet" href="/adminlte/assets/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/public/adminlte/assets/css/adminlte.css">
+    <link rel="stylesheet" href="/public/adminlte/assets/plugins/fontawesome-free/css/all.min.css">
 
     <!-- 必要なプラグイン（jQuery / Bootstrap） -->
-    <script src="/adminlte/assets/plugins/jquery/jquery.min.js"></script>
-    <script src="/adminlte/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/public/adminlte/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="/public/adminlte/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- AdminLTE JS -->
     <script src="/adminlte/assets/js/adminlte.js"></script>
@@ -37,14 +37,14 @@
                 <ul class="nav nav-pills nav-sidebar flex-column">
 
                     <li class="nav-item">
-                        <a href="/admin/customers" class="nav-link">
+                        <a href="/public/admin/customers" class="nav-link">
                             <i class="nav-icon fas fa-users"></i>
                             <p>顧客一覧</p>
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="/admin/logout" class="nav-link">
+                        <a href="/public/admin/logout" class="nav-link">
                             <i class="nav-icon fas fa-sign-out-alt"></i>
                             <p>ログアウト</p>
                         </a>
