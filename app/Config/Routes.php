@@ -71,6 +71,13 @@ $routes->post('/api/mernu/likelist', 'MenuController::GetLikeList');
 //自分が投稿した一覧取得
 $routes->post('/api/mernu/Rejistlist', 'MenuController::GetRejistList');
 
+//管理者用ページ
+$routes->get('admin/login', 'Admin\LoginController::index');
+$routes->post('admin/login', 'Admin\LoginController::auth');
+$routes->get('admin/logout', 'Admin\LoginController::logout');
+
+
+
 $routes->post('/api/test', 'UserTempController::test');
 
 $routes->get('(:any)', 'Pages::view/$1');
