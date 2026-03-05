@@ -85,6 +85,13 @@ $routes->group('admin', ['filter' => 'adminAuth'], function($routes) {
     $routes->get('customers', 'Admin\CustomerController::index');
 });
 
+$routes->get('admin/catch/register', 'Admin\DashboardController::register');
+$routes->post('admin/catch/update', 'Admin\DashboardController::save');
+$routes->get('admin/catch/csv', 'Admin\DashboardController::csv');
+
+$routes->get('admin/catch/getDataByDate', 'Admin\DashboardController::getDataByDate');
+
+
 $routes->post('/api/test', 'UserTempController::test');
 
 $routes->get('(:any)', 'Pages::view/$1');

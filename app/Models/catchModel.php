@@ -13,87 +13,59 @@ class CatchModel extends Model
     protected $db;
 
     //テーブル名
-    protected $table = 'cmsb_t_catch';
+    protected $table = 'cmsb_t_catchs';
 
+    //主キー
+    protected $primaryKey = 'CreateDate';
+
+    //戻り値型
     protected $returnType = 'array';
 
-    
+    //タイムスタンプ設定
+    protected $useTimestamps = false;
+
+    //更新フィールド
+    protected $allowedFields = [
+        'CreateDate',
+        'Torafugu',
+        'Madai',
+        'Mahata',
+        'UpdateDate'
+    ];
+
+
     // ++++++++++ メソッド ++++++++++
 
-    public function GetData()
+    // 最新日付を取得
+    public function getLatest()
     {
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "SELECT t_catch.CreateDate, m_FishKind.FishName, t_catch.Volume, t_catch.UpdateDate FROM cmsb_t_catch AS t_catch
-                    LEFT JOIN cmsb_m_FishKind AS m_FishKind ON t_catch.FishType = m_FishKind.FishKind ORDER BY t_catch.updatedDate DESC";
-            return (new Query($db))->setQuery($sql);
-        });
-
-        // クエリ実行
-        $result = $query->execute();
-
-        $data =[];
-        foreach ($result->getResult() as $row){
-            array_push($data, $row);
-        }
-
-        return $data;
+        return $this->orderBy('CreateDate', 'DESC')
+                    ->first();
     }
 
-    //該当の記事IDに対するコメント一覧を取得する
-    public function GetIdData($iId)
+    // 今日のデータ取得
+    public function getByDate($date)
     {
-        // 暗号鍵取得
-        $key = getenv("database.default.encryption.key");
-
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "SELECT t_comment.num, comment, AES_DECRYPT(`nickname`, UNHEX(SHA2(?,512))) as nickname, t_comment.updatedDate FROM cmsb_t_comments AS t_comment
-                    LEFT JOIN cmsb_m_user AS m_user ON t_comment.token = m_user.token WHERE t_comment.id = ? ORDER BY t_comment.updatedDate";
-            return (new Query($db))->setQuery($sql);
-        });
-
-        // クエリ実行
-        $result = $query->execute(
-            $key,
-            $iId
-        );
-        
-        $data =[];
-        foreach ($result->getResult() as $row){
-            array_push($data, $row);
-        }
-
-        return $data;
+        return $this->where('CreateDate', $date)->first();
     }
 
-    //該当の記事IDに対するコメントを登録する
-    public function Rejist($iId, $iToken, $iComment)
+    public function getDataByDate()
     {
-        // クエリ生成
-        $query = $this->db->prepare(static function ($db) 
-        {
-            $sql = "INSERT INTO cmsb_t_comments ( `title`, `id`, `token`, `comment`) 
-                VALUES (?,?,?,?)";
-            return (new Query($db))->setQuery($sql);
-        });
+        $date = $this->request->getGet('date');
 
-        // クエリ実行
-        $result = $query->execute(
-            "*",
-            $iId,
-            $iToken,
-            $iComment
-        );
-        
-        //$row = $result->getRow();
-        if (isset($result)){
-            return 200;
-        }
-        else{
-            return 401;
-        }
+        $model = new CatchModel();
+        $data = $model->getByDate($date);
+
+        return $this->response->setJSON($data);
     }
+
+    //直近5日のデータ取得
+    public function getRecentDays($latestDate, $limit = 5)
+    {
+        return $this->where('CreateDate !=', $latestDate)
+                    ->orderBy('CreateDate', 'DESC')
+                    ->limit($limit)
+                    ->find();
+    }
+
 }

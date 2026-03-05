@@ -1,79 +1,60 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title><?= $title ?? '管理画面' ?></title>
+    <meta charset="UTF-8">
+    <title>管理画面</title>
 
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="/public/adminlte/assets/css/adminlte.css">
+    <link rel="stylesheet" href="/public/adminlte/assets/css/adminlte.min.css">
+
+    <!-- Bootstrap (AdminLTE 同梱) -->
+    <link rel="stylesheet" href="/public/adminlte/assets/plugins/bootstrap/css/bootstrap.min.css">
+
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="/public/adminlte/assets/plugins/fontawesome-free/css/all.min.css">
 
-    <!-- 必要なプラグイン（jQuery / Bootstrap） -->
-    <script src="/public/adminlte/assets/plugins/jquery/jquery.min.js"></script>
-    <script src="/public/adminlte/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- AdminLTE JS -->
-    <script src="/adminlte/assets/js/adminlte.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/public/css/style.css">
 </head>
 
-<body class="layout-fixed sidebar-mini">
+<body class="hold-transition">
+
 <div class="wrapper">
 
-    <!-- Navbar -->
+    <!-- ヘッダー -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-        <span class="navbar-brand ml-2">管理画面</span>
+
+        <!-- 右側メニュー -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a href="/logout" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt"></i> ログアウト
+                </a>
+            </li>
+        </ul>
     </nav>
 
-    <!-- Sidebar -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="/admin" class="brand-link">
-            <span class="brand-text font-weight-light">Admin</span>
-        </a>
+    <!-- メインコンテンツ -->
+    <div class="content-wrapper" style="margin-left:0 !important;">
 
-        <div class="sidebar">
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column">
-
-                    <li class="nav-item">
-                        <a href="/public/admin/customers" class="nav-link">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>顧客一覧</p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="/public/admin/logout" class="nav-link">
-                            <i class="nav-icon fas fa-sign-out-alt"></i>
-                            <p>ログアウト</p>
-                        </a>
-                    </li>
-
-                </ul>
-            </nav>
-        </div>
-    </aside>
-
-    <!-- Content Wrapper -->
-    <div class="content-wrapper p-3">
-
-        <?php $message = session()->getFlashdata('message'); ?>
-        <?php if ($message): ?>
-            <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
-                <?= $message ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <section class="content pt-4">
+            <div class="container-fluid">
+                <?= $this->renderSection('content') ?>
             </div>
-        <?php endif; ?>
+        </section>
 
-        <?php $error = session()->getFlashdata('error'); ?>
-        <?php if ($error): ?>
-            <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
-                <?= $error ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        <?= $this->renderSection('content') ?> 
     </div>
+
+</div>
+
+<!-- jQuery -->
+<script src="/public/adminlte/assets/plugins/jquery/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="/public/adminlte/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- AdminLTE -->
+<script src="/public/adminlte/assets/js/adminlte.min.js"></script>
+
 </body>
 </html>
