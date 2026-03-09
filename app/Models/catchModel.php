@@ -36,7 +36,7 @@ class CatchModel extends Model
 
     // ++++++++++ メソッド ++++++++++
 
-    // 最新日付を取得
+    // 最新日付のデータ取得
     public function getLatest()
     {
         return $this->orderBy('CreateDate', 'DESC')

@@ -5,8 +5,10 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\CatchModel;
 
+//管理画面のダッシュボード画面への制御
 class DashboardController extends BaseController
 {
+    //初期表示
     public function index()
     {
         log_message('debug', 'DashboardController start');
@@ -21,11 +23,13 @@ class DashboardController extends BaseController
         ]);
     }
 
+    //登録画面の呼び出し
     public function register()
     {
         return view('admin/catch/register');
     }
 
+    //最新日付の取得
     public function getDataByDate()
     {
         log_message('debug', 'DashboardController getDataByDate');
@@ -37,6 +41,7 @@ class DashboardController extends BaseController
         return $this->response->setJSON($data);
     }
 
+    //漁獲量のデータ保存
     public function save()
     {
         log_message('debug', 'DashboardController save');
@@ -66,6 +71,7 @@ class DashboardController extends BaseController
         return redirect()->to('admin');
     }
 
+    //漁獲量のデータをCSVで出力
     public function csv()
     {
         $model = new CatchModel();

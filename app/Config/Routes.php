@@ -35,12 +35,17 @@ $routes->post("/api/signin/guard.user", "SignInController::GuardUser");
 // TOP表示（トピックスの取得）
 $routes->post('/api/top/view', 'HomeController::View');
 
-//$routes->post('/api/report/view', 'ReportListController::View');
+//漁獲量の取得
+$routes->get('/api/top/catch.latest', 'HomeController::latest');
+
+$routes->post('/api/report/view', 'ReportListController::View');
 //魚種毎の記事取得（市場関係者）
 $routes->post('/api/report/market.viewlist', 'ReportListController::GetMarketReport');
 
 //魚種毎の記事取得（生産者）
 $routes->post('/api/report/fishman.viewlist', 'ReportListController::GetFishmanReport');
+
+
 
 
 //記事詳細取得
@@ -70,6 +75,10 @@ $routes->post('/api/mernu/likelist', 'MenuController::GetLikeList');
 
 //自分が投稿した一覧取得
 $routes->post('/api/mernu/Rejistlist', 'MenuController::GetRejistList');
+
+//PR動画のいいね
+$routes->get('api/like/get', 'PrLikeController::get');
+$routes->post('api/like/add', 'PrLikeController::add');
 
 //管理者用ページ
 $routes->get('admin/login', 'Admin\LoginController::index');
