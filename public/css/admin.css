@@ -11,3 +11,8 @@
     width: 120px;
     text-align: right;
 }
+
+.control-sidebar-btn,
+.control-sidebar {
+    display: none !important;
+}

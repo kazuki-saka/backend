@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <title>管理画面</title>
 
+    <script>
+    $(document).ready(function() {
+        $('.control-sidebar').remove();
+        $('.control-sidebar-btn').remove();
+    });
+    </script>
+
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="/public/adminlte/assets/css/adminlte.min.css">
 
     <!-- Bootstrap (AdminLTE 同梱) -->
     <link rel="stylesheet" href="/public/adminlte/assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="/public/adminlte/assets/plugins/fontawesome-free/css/all.min.css">
 
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="/adminlte/assets/css/adminlte.min.css">
