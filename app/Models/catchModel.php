@@ -68,4 +68,13 @@ class CatchModel extends Model
                     ->find();
     }
 
+    //範囲指定されたデータ取得
+    public function GetRangeDays($start, $end)
+    {
+        return $this->where('CreateDate >=', $start)
+                    ->where('CreateDate <=', $end)
+                    ->orderBy('CreateDate', 'ASC')
+                    ->findAll();
+    }
+
 }

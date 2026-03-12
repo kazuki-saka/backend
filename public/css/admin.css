@@ -1,0 +1,13 @@
+.table thead th {
+    background: linear-gradient(to bottom, #b3e5ff, #6ec6ff);
+    color: rgb(0, 0, 0) !important;
+}
+
+.input-date {
+    width: 200px;
+}
+
+.input-weight {
+    width: 120px;
+    text-align: right;
+}

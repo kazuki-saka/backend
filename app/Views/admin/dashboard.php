@@ -1,7 +1,8 @@
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
-<div class="container mt-4">
+
+<div class="container-fluid">
 
     <h3>漁獲量管理</h3>
 
@@ -17,18 +18,18 @@
                 <table class="table table-bordered mt-3">
                     <thead>
                         <tr>
-                            <th>日付</th>
-                            <th>トラフグ</th>
-                            <th>マダイ</th>
-                            <th>マハタ</th>
+                            <th style="width: 140px;">日付</th>
+                            <th style="width: 180px;" class="text-center">若狭ふぐ</th>
+                            <th style="width: 180px;" class="text-center">敦賀真鯛</th>
+                            <th style="width: 180px;" class="text-center">若狭まはた</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><?= esc($latest['CreateDate']) ?></td>
-                            <td><?= esc($latest['Torafugu']) ?> kg</td>
-                            <td><?= esc($latest['Madai']) ?> kg</td>
-                            <td><?= esc($latest['Mahata']) ?> kg</td>
+                            <td class="text-right"><?= number_format($latest['Torafugu']) ?> kg</td>
+                            <td class="text-right"><?= number_format($latest['Madai']) ?> kg</td>
+                            <td class="text-right"><?= number_format($latest['Mahata']) ?> kg</td>
                         </tr>
                     </tbody>
                 </table>
@@ -40,34 +41,28 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        <a href="admin/catch/register" class="btn btn-primary">登録画面へ</a>
-        <a href="/public/admin/catch/csv" class="btn btn-success">履歴CSV出力</a>
-        <a href="/logout" class="btn btn-danger">ログアウト</a>
-    </div>
-
-    <div class="card mt-4">
+    <div class="card mt-3">
         <div class="card-header">
             直近5日間の漁獲量
         </div>
         <div class="card-body">
 
-            <table class="table table-bordered">
+            <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
-                        <th>日付</th>
-                        <th>トラフグ</th>
-                        <th>マダイ</th>
-                        <th>マハタ</th>
+                        <th style="width: 140px;">日付</th>
+                        <th style="width: 180px;" class="text-center">若狭ふぐ</th>
+                        <th style="width: 180px;" class="text-center">敦賀真鯛</th>
+                        <th style="width: 180px;" class="text-center">若狭まはた</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($recent5 as $row): ?>
                     <tr>
                         <td><?= esc($row['CreateDate']) ?></td>
-                        <td><?= esc($row['Torafugu']) ?> kg</td>
-                        <td><?= esc($row['Madai']) ?> kg</td>
-                        <td><?= esc($row['Mahata']) ?> kg</td>
+                        <td class="text-right"><?= number_format($row['Torafugu']) ?> kg</td>
+                        <td class="text-right"><?= number_format($row['Madai']) ?> kg</td>
+                        <td class="text-right"><?= number_format($row['Mahata']) ?> kg</td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

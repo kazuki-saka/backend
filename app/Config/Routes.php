@@ -94,9 +94,13 @@ $routes->group('admin', ['filter' => 'adminAuth'], function($routes) {
     $routes->get('customers', 'Admin\CustomerController::index');
 });
 
+//管理者ページ　登録画面
 $routes->get('admin/catch/register', 'Admin\DashboardController::register');
 $routes->post('admin/catch/update', 'Admin\DashboardController::save');
-$routes->get('admin/catch/csv', 'Admin\DashboardController::csv');
+
+//管理者ページ　CSVダウンロード
+$routes->get('admin/catch/csv', 'Admin\CatchController::csvForm');
+$routes->post('admin/catch/csv/download', 'Admin\CatchController::csvDownload');
 
 $routes->get('admin/catch/getDataByDate', 'Admin\DashboardController::getDataByDate');
 
