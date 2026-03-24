@@ -28,7 +28,7 @@ class CatchController extends BaseController
         $data = $model->GetRangeDays($start, $end);
                     
         // CSV生成
-        $filename = "漁獲量_{$start}_{$end}.csv";
+        $filename = "在庫尾数_{$start}_{$end}.csv";
 
         // Excel で文字化けしないよう Shift-JIS で出力
         header('Content-Type: text/csv; charset=Shift_JIS');

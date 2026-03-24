@@ -4,7 +4,7 @@
 
 <div class="container-fluid">
 
-    <h3>漁獲量管理</h3>
+    <h3>在庫尾数管理</h3>
 
     <div class="card mt-3">
         <div class="card-header">
@@ -27,9 +27,9 @@
                     <tbody>
                         <tr>
                             <td><?= esc($latest['CreateDate']) ?></td>
-                            <td class="text-right"><?= number_format($latest['Torafugu']) ?> kg</td>
-                            <td class="text-right"><?= number_format($latest['Madai']) ?> kg</td>
-                            <td class="text-right"><?= number_format($latest['Mahata']) ?> kg</td>
+                            <td class="text-right"><?= number_format($latest['Torafugu']) ?></td>
+                            <td class="text-right"><?= number_format($latest['Madai']) ?></td>
+                            <td class="text-right"><?= number_format($latest['Mahata']) ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -43,7 +43,7 @@
 
     <div class="card mt-3">
         <div class="card-header">
-            直近5日間の漁獲量
+            直近5日間の在庫尾数
         </div>
         <div class="card-body">
 
@@ -60,9 +60,9 @@
                     <?php foreach ($recent5 as $row): ?>
                     <tr>
                         <td><?= esc($row['CreateDate']) ?></td>
-                        <td class="text-right"><?= number_format($row['Torafugu']) ?> kg</td>
-                        <td class="text-right"><?= number_format($row['Madai']) ?> kg</td>
-                        <td class="text-right"><?= number_format($row['Mahata']) ?> kg</td>
+                        <td class="text-right"><?= number_format($row['Torafugu']) ?></td>
+                        <td class="text-right"><?= number_format($row['Madai']) ?></td>
+                        <td class="text-right"><?= number_format($row['Mahata']) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -3,7 +3,7 @@
 
 <div class="container mt-4">
 
-    <h3>漁獲量登録</h3>
+    <h3>在庫尾数登録</h3>
 
     <form action="/public/admin/catch/update" method="post">
 
@@ -23,7 +23,7 @@
             <thead>
                 <tr>
                     <th style="width: 180px;">魚種</th>
-                    <th style="width: 180px;">漁獲量（kg）</th>
+                    <th style="width: 180px;">在庫尾数</th>
                 </tr>
             </thead>
             <tbody>

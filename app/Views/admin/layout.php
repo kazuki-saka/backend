@@ -43,7 +43,7 @@
     <!-- Sidebar -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="/public/admin/" class="brand-link">
-            <span class="brand-text font-weight-light">漁獲量管理</span>
+            <span class="brand-text font-weight-light">在庫尾数管理</span>
         </a>
 
         <div class="sidebar">
@@ -53,7 +53,7 @@
                     <li class="nav-item">
                         <a href="/public/admin/catch/register" class="nav-link">
                             <i class="nav-icon fas fa-fish"></i>
-                            <p>漁獲量の登録</p>
+                            <p>在庫尾数の登録</p>
                         </a>
                     </li>
 

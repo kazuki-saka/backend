@@ -33,55 +33,55 @@ class HomeController extends ApiController
     }
 
     //最新の漁獲量の取得
-public function latest()
-{
-    log_message('debug', 'HomeController latest');
+    public function latest()
+    {
+        log_message('debug', 'HomeController latest');
 
-    try {
-        $model = new CatchModel();
+        try {
+            $model = new CatchModel();
 
-        // 最新1件を取得
-        $latest = $model->getLatest();
+            // 最新1件を取得
+            $latest = $model->getLatest();
 
-        if (!$latest) {
+            if (!$latest) {
+                return $this->response->setJSON([
+                    'status' => 404,
+                    'message' => 'データが存在しません'
+                ]);
+            }
+
+            // JSON 形式に整形
+            $items = [
+                [
+                    'fish' => '若狭ふぐ',
+                    'volume' => number_format($latest['Torafugu'])
+                ],
+                [
+                    'fish' => '敦賀真鯛',
+                    'volume' => number_format($latest['Madai'])
+                ],
+                [
+                    'fish' => '若狭まはた',
+                    'volume' => number_format($latest['Mahata'])
+                ],
+            ];
+
             return $this->response->setJSON([
-                'status' => 404,
-                'message' => 'データが存在しません'
+                'status' => 200,
+                'date' => $latest['CreateDate'],
+                'items' => $items
+            ]);
+
+        } catch (\Exception $e) {
+
+            log_message('error', $e->getMessage());
+
+            return $this->response->setJSON([
+                'status' => 500,
+                'message' => '予期しない例外が発生しました'
             ]);
         }
-
-        // JSON 形式に整形
-        $items = [
-            [
-                'fish' => '若狭ふぐ',
-                'volume' => $latest['Torafugu']
-            ],
-            [
-                'fish' => '敦賀真鯛',
-                'volume' => $latest['Madai']
-            ],
-            [
-                'fish' => '若狭まはた',
-                'volume' => $latest['Mahata']
-            ],
-        ];
-
-        return $this->response->setJSON([
-            'status' => 200,
-            'date' => $latest['CreateDate'],
-            'items' => $items
-        ]);
-
-    } catch (\Exception $e) {
-
-        log_message('error', $e->getMessage());
-
-        return $this->response->setJSON([
-            'status' => 500,
-            'message' => '予期しない例外が発生しました'
-        ]);
     }
-}
 
     //トップを開いた時の初期表示
     public function View()
